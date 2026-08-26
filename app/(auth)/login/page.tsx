@@ -89,24 +89,6 @@ export default function LoginPage() {
             <p className="text-white/70 text-base leading-relaxed mb-10">
               Platform pengelolaan formulir penyuluhan kelompok secara digital — efisien, terstandar, dan terdokumentasi.
             </p>
-
-            {/* Fitur highlight */}
-            <div className="grid grid-cols-2 gap-3 w-full">
-              {[
-                { emoji: "📋", label: "Formulir A–G" },
-                { emoji: "📄", label: "Export PDF & Excel" },
-                { emoji: "📊", label: "Dashboard Statistik" },
-                { emoji: "🔒", label: "Akses Berbasis Peran" },
-              ].map((f) => (
-                <div
-                  key={f.label}
-                  className="flex items-center gap-2.5 bg-white/8 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-2.5"
-                >
-                  <span className="text-lg">{f.emoji}</span>
-                  <span className="text-sm text-white/85 font-medium">{f.label}</span>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Footer bawah */}

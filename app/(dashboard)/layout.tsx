@@ -4,7 +4,9 @@ import Sidebar from "@/components/layout/Sidebar";
 
 export default async function DashboardLayout({
   children,
-}: LayoutProps<"/dashboard">) {
+}: {
+  children: React.ReactNode;
+}) {
   const supabase = await createClient();
   const {
     data: { user },

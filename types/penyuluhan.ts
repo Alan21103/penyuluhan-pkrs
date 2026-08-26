@@ -1,6 +1,6 @@
 // Tipe data untuk Formulir Pelaksanaan Penyuluhan Kelompok PKRS
 
-export type StatusPenyuluhan = "draft" | "diajukan" | "terverifikasi";
+export type StatusPenyuluhan = "draft" | "selesai";
 
 export type MetodePenyuluhan =
   | "Ceramah"

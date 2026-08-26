@@ -126,55 +126,53 @@ CREATE TRIGGER profiles_updated_at
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
 
 -- ============================================================
--- 5. Row Level Security (RLS)
+-- 5. Row Level Security (RLS) & Security Definer Helpers
 -- ============================================================
+
+-- Helper function: bypass RLS saat cek admin untuk mencegah infinite recursion (42P17)
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+STABLE
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND role = 'admin'
+  );
+$$;
 
 -- Aktifkan RLS
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.penyuluhan ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.dokumen_upload ENABLE ROW LEVEL SECURITY;
 
--- PROFILES: user hanya bisa lihat & edit profil sendiri
+-- PROFILES
 DROP POLICY IF EXISTS "Profil sendiri saja" ON public.profiles;
-CREATE POLICY "Profil sendiri saja"
-  ON public.profiles
-  FOR ALL
-  USING (auth.uid() = id)
-  WITH CHECK (auth.uid() = id);
-
--- Admin bisa lihat semua profil
 DROP POLICY IF EXISTS "Admin lihat semua profil" ON public.profiles;
-CREATE POLICY "Admin lihat semua profil"
+DROP POLICY IF EXISTS "Akses profil" ON public.profiles;
+
+CREATE POLICY "Akses profil"
   ON public.profiles
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role = 'admin'
-    )
-  );
+  FOR ALL
+  USING (auth.uid() = id OR public.is_admin())
+  WITH CHECK (auth.uid() = id OR public.is_admin());
 
--- PENYULUHAN: Petugas bisa CRUD data sendiri, Admin bisa semua
+-- PENYULUHAN
 DROP POLICY IF EXISTS "Petugas CRUD data sendiri" ON public.penyuluhan;
-CREATE POLICY "Petugas CRUD data sendiri"
-  ON public.penyuluhan
-  FOR ALL
-  USING (auth.uid() = created_by)
-  WITH CHECK (auth.uid() = created_by);
-
 DROP POLICY IF EXISTS "Admin akses semua penyuluhan" ON public.penyuluhan;
-CREATE POLICY "Admin akses semua penyuluhan"
+DROP POLICY IF EXISTS "Akses penyuluhan" ON public.penyuluhan;
+
+CREATE POLICY "Akses penyuluhan"
   ON public.penyuluhan
   FOR ALL
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role = 'admin'
-    )
-  );
+  USING (created_by = auth.uid() OR public.is_admin())
+  WITH CHECK (created_by = auth.uid() OR public.is_admin());
 
--- DOKUMEN UPLOAD: ikut akses penyuluhan
+-- DOKUMEN UPLOAD
 DROP POLICY IF EXISTS "Akses dokumen via penyuluhan" ON public.dokumen_upload;
+
 CREATE POLICY "Akses dokumen via penyuluhan"
   ON public.dokumen_upload
   FOR ALL
@@ -182,13 +180,7 @@ CREATE POLICY "Akses dokumen via penyuluhan"
     EXISTS (
       SELECT 1 FROM public.penyuluhan
       WHERE id = penyuluhan_id
-        AND (
-          created_by = auth.uid()
-          OR EXISTS (
-            SELECT 1 FROM public.profiles
-            WHERE id = auth.uid() AND role = 'admin'
-          )
-        )
+        AND (created_by = auth.uid() OR public.is_admin())
     )
   );
 
