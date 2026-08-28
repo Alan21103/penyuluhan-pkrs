@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { penyuluhanService } from "@/services/penyuluhan.service";
 import { generatePDF, getPDFFilename } from "@/lib/pdf-generator";
 import { cn } from "@/lib/utils";
 import {
@@ -35,7 +35,6 @@ const PAGE_SIZE = 10;
 
 export default function PenyuluhanTable({ data }: { data: PenyuluhanRow[] }) {
   const router = useRouter();
-  const supabase = createClient();
 
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -61,9 +60,9 @@ export default function PenyuluhanTable({ data }: { data: PenyuluhanRow[] }) {
   const handleDelete = async () => {
     if (!deleteId) return;
     setDeleting(true);
-    const { error } = await supabase.from("penyuluhan").delete().eq("id", deleteId);
+    const { error } = await penyuluhanService.delete(deleteId);
     if (error) {
-      alert("Gagal menghapus data: " + error.message);
+      alert("Gagal menghapus data: " + error);
       setDeleting(false);
       return;
     }
@@ -149,7 +148,7 @@ export default function PenyuluhanTable({ data }: { data: PenyuluhanRow[] }) {
                 <button id={`btn-pdf-${row.id}`} title="Export PDF"
                   className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-50 transition-colors border border-border"
                   onClick={async () => {
-                    const { data } = await supabase.from("penyuluhan").select("*").eq("id", row.id).single();
+                    const data = await penyuluhanService.getById(row.id);
                     if (data) { const doc = await generatePDF(data as any); setPreviewDoc(doc); setPreviewFileName(getPDFFilename(data as any)); }
                   }}>
                   <FileDown className="w-3.5 h-3.5" /> PDF
@@ -249,7 +248,7 @@ export default function PenyuluhanTable({ data }: { data: PenyuluhanRow[] }) {
                             title="Export PDF"
                             className="p-1.5 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-50 transition-colors"
                             onClick={async () => {
-                              const { data } = await supabase.from("penyuluhan").select("*").eq("id", row.id).single();
+                              const data = await penyuluhanService.getById(row.id);
                               if (data) {
                                 const doc = await generatePDF(data as any);
                                 setPreviewDoc(doc);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { penyuluhanService } from "@/services/penyuluhan.service";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, RotateCcw, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,15 +18,11 @@ export default function StatusToggle({
   currentStatus,
 }: StatusToggleProps) {
   const router = useRouter();
-  const supabase = createClient();
   const [loading, setLoading] = useState(false);
 
   const updateStatus = async (newStatus: Status) => {
     setLoading(true);
-    const { error } = await supabase
-      .from("penyuluhan")
-      .update({ status: newStatus })
-      .eq("id", penyuluhanId);
+    const { error } = await penyuluhanService.updateStatus(penyuluhanId, newStatus);
 
     if (!error) {
       router.refresh();

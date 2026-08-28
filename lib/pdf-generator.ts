@@ -195,10 +195,31 @@ export async function generatePDF(data: Penyuluhan): Promise<jsPDF> {
     body: checklist.map((c, i) => [
       i + 1,
       c.item,
-      c.ya ? "✓" : "",
-      c.tidak ? "✓" : "",
+      "",
+      "",
       c.keterangan || "",
     ]),
+    didDrawCell: (hookData) => {
+      if (hookData.section === "body") {
+        const item = checklist[hookData.row.index];
+        if (!item) return;
+
+        const isYa = hookData.column.index === 2 && (item.ya === true || String(item.ya) === "true");
+        const isTidak = hookData.column.index === 3 && (item.tidak === true || String(item.tidak) === "true");
+
+        if (isYa || isTidak) {
+          const { x, y: cellY, width, height } = hookData.cell;
+          const cx = x + width / 2;
+          const cy = cellY + height / 2;
+
+          doc.setDrawColor(0, 0, 0);
+          doc.setLineWidth(0.55);
+          // Gambar garis centang (checkmark) yang jelas & proporsional
+          doc.line(cx - 2.0, cy - 0.2, cx - 0.6, cy + 1.5);
+          doc.line(cx - 0.6, cy + 1.5, cx + 2.2, cy - 1.8);
+        }
+      }
+    },
   });
   y = (doc as any).lastAutoTable.finalY + 4;
 

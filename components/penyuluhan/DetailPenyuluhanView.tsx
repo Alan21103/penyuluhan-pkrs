@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { generatePDF, getPDFFilename } from "@/lib/pdf-generator";
-import { createClient } from "@/lib/supabase/client";
+import { penyuluhanService } from "@/services/penyuluhan.service";
 import { FileDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PDFPreviewModal from "@/components/penyuluhan/PDFPreviewModal";
@@ -12,11 +12,10 @@ export default function DetailPenyuluhanView({ penyuluhanId }: { penyuluhanId: s
   const [loading, setLoading] = useState(false);
   const [previewDoc, setPreviewDoc] = useState<jsPDF | null>(null);
   const [previewFileName, setPreviewFileName] = useState("");
-  const supabase = createClient();
 
   const handleExportPDF = async () => {
     setLoading(true);
-    const { data } = await supabase.from("penyuluhan").select("*").eq("id", penyuluhanId).single();
+    const data = await penyuluhanService.getById(penyuluhanId);
     if (data) {
       const doc = await generatePDF(data as any);
       setPreviewDoc(doc);

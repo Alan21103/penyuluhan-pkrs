@@ -4,7 +4,7 @@ import StatusToggle from "@/components/penyuluhan/ApprovalFlow";
 import DetailPenyuluhanView from "@/components/penyuluhan/DetailPenyuluhanView";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { Pencil, ChevronLeft } from "lucide-react";
+import { Pencil, ChevronLeft, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default async function DetailPenyuluhanPage({ params }: PageProps<"/penyuluhan/[id]">) {
@@ -163,10 +163,26 @@ async function DetailPenyuluhanContent({ data, dokumen }: { data: any; dokumen: 
           <tbody className="divide-y divide-border/40">
             {(data.checklist_evaluasi ?? []).map((c: any, i: number) => (
               <tr key={i} className="text-foreground/80">
-                <td className="py-1.5">{c.item}</td>
-                <td className="text-center py-1.5">{c.ya ? "✓" : ""}</td>
-                <td className="text-center py-1.5">{c.tidak ? "✓" : ""}</td>
-                <td className="py-1.5 text-muted-foreground">{c.keterangan || ""}</td>
+                <td className="py-2">{c.item}</td>
+                <td className="text-center py-2">
+                  {c.ya ? (
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
+                      <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground/30 text-xs">-</span>
+                  )}
+                </td>
+                <td className="text-center py-2">
+                  {c.tidak ? (
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400">
+                      <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground/30 text-xs">-</span>
+                  )}
+                </td>
+                <td className="py-2 text-muted-foreground">{c.keterangan || "-"}</td>
               </tr>
             ))}
           </tbody>

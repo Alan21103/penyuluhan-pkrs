@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { penyuluhanService } from "@/services/penyuluhan.service";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import DatePicker from "@/components/ui/DatePicker";
@@ -17,7 +17,7 @@ import {
   type JenisDokumen,
 } from "@/types/penyuluhan";
 import {
-  Save, CheckCircle, Plus, Trash2, ChevronLeft,
+  Save, CheckCircle, Plus, Trash2, ChevronLeft, ChevronDown,
   Info, ListChecks, BookOpen, ClipboardCheck, BarChart3, PenLine,
 } from "lucide-react";
 
@@ -69,6 +69,13 @@ interface FormPenyuluhanProps {
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
+
+const SASARAN_OPTIONS = [
+  "Pasien & Keluarga Pasien",
+  "Pengunjung",
+  "Petugas",
+  "Komunitas",
+] as const;
 
 const METODE_OPTIONS: MetodePenyuluhan[] = ["Ceramah", "Diskusi", "Demonstrasi", "Simulasi", "Praktik"];
 const MEDIA_OPTIONS: MediaPenyuluhan[] = ["Leaflet", "Poster", "PPT", "Video", "Alat Peraga", "Lainnya"];
@@ -158,6 +165,25 @@ function TextareaField({ className, ...props }: React.TextareaHTMLAttributes<HTM
   );
 }
 
+function SelectField({ className, children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) {
+  return (
+    <div className="relative">
+      <select
+        {...props}
+        className={cn(
+          "w-full h-10 px-3 pr-9 rounded-xl border border-input bg-background text-foreground text-sm appearance-none cursor-pointer",
+          "placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring",
+          "transition-colors disabled:opacity-50",
+          className
+        )}
+      >
+        {children}
+      </select>
+      <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+    </div>
+  );
+}
+
 function MultiCheckbox<T extends string>({
   options, value, onChange, id,
 }: { options: T[]; value: T[]; onChange: (v: T[]) => void; id: string }) {
@@ -190,7 +216,6 @@ function MultiCheckbox<T extends string>({
 
 export default function FormPenyuluhan({ mode, userId, initialData }: FormPenyuluhanProps) {
   const router = useRouter();
-  const supabase = createClient();
 
   const [form, setForm] = useState<FormData>({
     ...DEFAULT_FORM,
@@ -229,6 +254,10 @@ export default function FormPenyuluhan({ mode, userId, initialData }: FormPenyul
 
   const [saving, setSaving] = useState(false);
   const [activeSection, setActiveSection] = useState("A");
+  const isSasaranPreset = (SASARAN_OPTIONS as readonly string[]).includes(form.sasaran);
+  const [isCustomSasaran, setIsCustomSasaran] = useState(
+    Boolean(initialData?.sasaran && !isSasaranPreset)
+  );
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Track active section via scroll spy
@@ -315,11 +344,13 @@ export default function FormPenyuluhan({ mode, userId, initialData }: FormPenyul
       payload.created_by = userId;
     }
 
-    let error;
+    let error: string | null = null;
     if (mode === "edit" && initialData?.id) {
-      ({ error } = await supabase.from("penyuluhan").update(payload).eq("id", initialData.id));
+      const res = await penyuluhanService.update(initialData.id, payload as any);
+      error = res.error;
     } else {
-      ({ error } = await supabase.from("penyuluhan").insert(payload));
+      const res = await penyuluhanService.create(payload as any);
+      error = res.error;
     }
 
     setSaving(false);
@@ -327,8 +358,8 @@ export default function FormPenyuluhan({ mode, userId, initialData }: FormPenyul
       router.push("/penyuluhan");
       router.refresh();
     } else {
-      console.error("Supabase error:", error);
-      alert("Gagal menyimpan: " + error.message);
+      console.error("Save error:", error);
+      alert("Gagal menyimpan: " + error);
     }
   };
 
@@ -514,8 +545,42 @@ export default function FormPenyuluhan({ mode, userId, initialData }: FormPenyul
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <FieldLabel required>Sasaran</FieldLabel>
-                <InputField id="input-sasaran" placeholder="Pasien & Keluarga / Pengunjung / dll"
-                  value={form.sasaran} onChange={e => set("sasaran", e.target.value)} />
+                <div className="space-y-2">
+                  <SelectField
+                    id="select-sasaran"
+                    value={
+                      isCustomSasaran || (!isSasaranPreset && form.sasaran !== "")
+                        ? "Lainnya"
+                        : form.sasaran
+                    }
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === "Lainnya") {
+                        setIsCustomSasaran(true);
+                        if (isSasaranPreset) set("sasaran", "");
+                      } else {
+                        setIsCustomSasaran(false);
+                        set("sasaran", val);
+                      }
+                    }}
+                  >
+                    <option value="" disabled>-- Pilih Sasaran --</option>
+                    {SASARAN_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                    <option value="Lainnya">Lainnya</option>
+                  </SelectField>
+
+                  {(isCustomSasaran || (!isSasaranPreset && form.sasaran !== "")) && (
+                    <InputField
+                      id="input-sasaran-lainnya"
+                      placeholder="Masukkan sasaran lainnya..."
+                      value={form.sasaran}
+                      onChange={(e) => set("sasaran", e.target.value)}
+                      autoFocus
+                    />
+                  )}
+                </div>
               </div>
               <div>
                 <FieldLabel required>Estimasi Peserta</FieldLabel>
@@ -563,13 +628,39 @@ export default function FormPenyuluhan({ mode, userId, initialData }: FormPenyul
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <FieldLabel>Durasi (menit)</FieldLabel>
-                <InputField id="input-durasi" type="number" min={0}
-                  value={form.durasi || ""}
-                  onChange={e => set("durasi", e.target.value === "" ? 0 : Number(e.target.value))}
-                  placeholder="Contoh: 30" />
+            <div className="mb-4">
+              <FieldLabel>Durasi (menit)</FieldLabel>
+              <div className="flex flex-wrap items-center gap-2.5">
+                {[30, 45, 60].map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    id={`btn-durasi-${d}`}
+                    onClick={() => set("durasi", form.durasi === d ? 0 : d)}
+                    className={cn(
+                      "px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer",
+                      form.durasi === d
+                        ? "bg-primary text-primary-foreground border-primary shadow-xs"
+                        : "bg-background text-muted-foreground border-input hover:border-primary/50 hover:text-foreground"
+                    )}
+                  >
+                    {d} Menit
+                  </button>
+                ))}
+                <div className="relative w-36">
+                  <InputField
+                    id="input-durasi"
+                    type="number"
+                    min={0}
+                    value={form.durasi || ""}
+                    onChange={(e) => set("durasi", e.target.value === "" ? 0 : Number(e.target.value))}
+                    placeholder="Lainnya..."
+                    className="pr-12 text-xs h-9"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
+                    Menit
+                  </span>
+                </div>
               </div>
             </div>
 
