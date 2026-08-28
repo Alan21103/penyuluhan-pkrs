@@ -16,10 +16,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PKRS — Sistem Penyuluhan Kesehatan",
+  title: "Sistem Informasi PKRS",
   description:
     "Aplikasi manajemen formulir pelaksanaan penyuluhan kelompok Promosi Kesehatan Rumah Sakit (PKRS)",
   keywords: ["PKRS", "penyuluhan kesehatan", "promosi kesehatan", "rumah sakit"],
+  icons: {
+    icon: [
+      { url: "/images/Logo-removebg-preview.png" },
+    ],
+    shortcut: "/images/Logo-removebg-preview.png",
+    apple: "/images/Logo-removebg-preview.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

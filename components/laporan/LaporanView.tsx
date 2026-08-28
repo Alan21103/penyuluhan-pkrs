@@ -5,6 +5,7 @@ import { generateExcel } from "@/lib/excel-generator";
 import { cn } from "@/lib/utils";
 import { FileSpreadsheet, Filter, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import DatePicker from "@/components/ui/DatePicker";
 import type { Penyuluhan } from "@/types/penyuluhan";
 
 const MONTHS = [
@@ -148,24 +149,32 @@ export default function LaporanView({ data }: LaporanViewProps) {
             </div>
           </div>
         ) : (
-          <div className="flex flex-wrap gap-3 items-end">
-            <div>
+          <div className="flex flex-wrap gap-4 items-end">
+            <div className="w-48">
               <label className="block text-xs font-medium text-muted-foreground mb-1">Dari Tanggal</label>
-              <input id="filter-from" type="date" value={fromDate}
-                onChange={e => { setFromDate(e.target.value); setPage(1); }}
-                className="h-9 px-3 rounded-xl border border-input bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              <DatePicker
+                id="filter-from"
+                value={fromDate}
+                onChange={(val) => { setFromDate(val); setPage(1); }}
+                placeholder="Pilih tanggal mulai"
+                locale="id"
               />
             </div>
-            <div>
+            <div className="w-48">
               <label className="block text-xs font-medium text-muted-foreground mb-1">Sampai Tanggal</label>
-              <input id="filter-to" type="date" value={toDate}
-                onChange={e => { setToDate(e.target.value); setPage(1); }}
-                className="h-9 px-3 rounded-xl border border-input bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              <DatePicker
+                id="filter-to"
+                value={toDate}
+                onChange={(val) => { setToDate(val); setPage(1); }}
+                placeholder="Pilih tanggal akhir"
+                locale="id"
               />
             </div>
             {(fromDate || toDate) && (
-              <button onClick={() => { setFromDate(""); setToDate(""); setPage(1); }}
-                className="h-9 px-3 rounded-xl border border-border text-sm text-muted-foreground hover:text-destructive flex items-center gap-1 transition-colors">
+              <button
+                onClick={() => { setFromDate(""); setToDate(""); setPage(1); }}
+                className="h-11 px-3.5 rounded-xl border border-border text-sm text-muted-foreground hover:text-destructive flex items-center gap-1 transition-colors cursor-pointer"
+              >
                 <X className="w-3.5 h-3.5" /> Reset
               </button>
             )}

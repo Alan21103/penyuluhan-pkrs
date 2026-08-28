@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import DatePicker from "@/components/ui/DatePicker";
 import SignaturePad from "@/components/penyuluhan/SignaturePad";
 import UploadDokumen from "@/components/penyuluhan/UploadDokumen";
 import {
@@ -440,8 +441,13 @@ export default function FormPenyuluhan({ mode, userId, initialData }: FormPenyul
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div>
                 <FieldLabel required>Tanggal Pelaksanaan</FieldLabel>
-                <InputField id="input-hari-tanggal" type="date" value={form.hari_tanggal}
-                  onChange={e => set("hari_tanggal", e.target.value)} />
+                <DatePicker
+                  id="input-hari-tanggal"
+                  value={form.hari_tanggal}
+                  onChange={(val) => set("hari_tanggal", val)}
+                  placeholder="Pilih tanggal"
+                  locale="id"
+                />
               </div>
               <div>
                 <FieldLabel required>Waktu Mulai</FieldLabel>
