@@ -156,9 +156,9 @@ export default function SignaturePad({ id, label, value, onChange }: SignaturePa
               >
                 <SignatureCanvas
                   ref={canvasRef}
-                  id={id}
                   penColor="#1a1a2e"
                   canvasProps={{
+                    id,
                     className: "w-full h-28 touch-none",
                     style: { width: "100%", height: "112px" },
                   }}

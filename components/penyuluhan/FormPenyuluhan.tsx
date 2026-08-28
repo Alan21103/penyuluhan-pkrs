@@ -819,7 +819,7 @@ export default function FormPenyuluhan({ mode, userId, initialData }: FormPenyul
               ) : (
                 form.dokumen_checklist.length > 0 && (
                   <p className="mt-3 text-xs text-muted-foreground italic">
-                    💡 Simpan data terlebih dahulu untuk dapat mengupload file dokumentasi.
+                    Simpan data terlebih dahulu untuk dapat mengupload file dokumentasi.
                   </p>
                 )
               )}

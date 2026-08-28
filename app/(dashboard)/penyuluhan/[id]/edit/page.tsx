@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import Header from "@/components/layout/Header";
 import FormPenyuluhan from "@/components/penyuluhan/FormPenyuluhan";
 import { notFound } from "next/navigation";
 
@@ -17,11 +16,9 @@ export default async function EditPenyuluhanPage({ params }: PageProps<"/penyulu
   if (!data) notFound();
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden">
-      <Header title="Edit Formulir Pelaksanaan" userEmail={user?.email} />
-      <main className="flex-1 overflow-y-auto">
-        <FormPenyuluhan mode="edit" userId={user?.id ?? ""} initialData={data} />
-      </main>
+    <div className="flex-1 h-full overflow-hidden">
+      <FormPenyuluhan mode="edit" userId={user?.id ?? ""} initialData={data} />
     </div>
   );
 }
+

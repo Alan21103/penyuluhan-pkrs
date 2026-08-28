@@ -2,9 +2,10 @@ import { createClient } from "@/lib/supabase/server";
 import Header from "@/components/layout/Header";
 import StatCard from "@/components/penyuluhan/StatCard";
 import DashboardCharts from "@/components/penyuluhan/DashboardCharts";
-import {
-  ClipboardList, Users, Brain, CalendarDays,
-} from "lucide-react";
+import { CalendarDays } from "lucide-react";
+import ReportingIcon from "@/components/icons/ReportingIcon";
+import PersonCombinationIcon from "@/components/icons/PersonCombinationIcon";
+import BrainIllustrationIcon from "@/components/icons/BrainIllustrationIcon";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -64,16 +65,39 @@ export default async function DashboardPage() {
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          <StatCard id="stat-penyuluhan-bulan-ini" title="Penyuluhan Bulan Ini" value={totalBulanIni}
-            subtitle={bulanNama} icon={ClipboardList} colorClass="bg-primary/10 text-primary" trend="neutral" />
-          <StatCard id="stat-total-peserta" title="Total Peserta" value={totalPeserta.toLocaleString("id-ID")}
-            subtitle="Bulan ini" icon={Users} colorClass="bg-emerald-100 text-emerald-700" trend="up" trendValue="+12%" />
-          <StatCard id="stat-rata-pemahaman" title="Rata-rata Pemahaman" value={`${avgPemahaman.toFixed(1)}%`}
-            subtitle="Berdasarkan verifikasi" icon={Brain} colorClass="bg-blue-100 text-blue-700"
-            trend={avgPemahaman >= 70 ? "up" : "down"} trendValue={avgPemahaman >= 70 ? "Baik" : "Perlu Perhatian"} />
-          <StatCard id="stat-total-kegiatan" title="Total Kegiatan" value={totalSemua ?? 0}
-            subtitle="Semua waktu" icon={CalendarDays} colorClass="bg-violet-100 text-violet-700" trend="neutral" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+          <StatCard
+            id="stat-penyuluhan-bulan-ini"
+            title="Penyuluhan Bulan Ini"
+            value={totalBulanIni}
+            subtitle={bulanNama}
+            icon={ReportingIcon}
+            colorClass="bg-blue-50 text-blue-600 border-blue-200/80"
+          />
+          <StatCard
+            id="stat-total-peserta"
+            title="Total Peserta"
+            value={totalPeserta.toLocaleString("id-ID")}
+            subtitle="Bulan ini"
+            icon={PersonCombinationIcon}
+            colorClass="bg-sky-50 text-sky-600 border-sky-200/80"
+          />
+          <StatCard
+            id="stat-rata-pemahaman"
+            title="Rata-rata Pemahaman"
+            value={`${avgPemahaman.toFixed(1)}%`}
+            subtitle="Berdasarkan verifikasi"
+            icon={BrainIllustrationIcon}
+            colorClass="bg-cyan-50 text-cyan-600 border-cyan-200/80"
+          />
+          <StatCard
+            id="stat-total-kegiatan"
+            title="Total Kegiatan"
+            value={totalSemua ?? 0}
+            subtitle="Semua waktu"
+            icon={CalendarDays}
+            colorClass="bg-indigo-50 text-indigo-600 border-indigo-200/80"
+          />
         </div>
 
         {/* Charts */}
@@ -83,7 +107,7 @@ export default async function DashboardPage() {
         {totalBulanIni === 0 && chartData.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 px-6 bg-card border border-dashed border-border rounded-2xl text-center">
             <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mb-3">
-              <ClipboardList className="w-7 h-7 text-muted-foreground" />
+              <ReportingIcon className="w-7 h-7 text-muted-foreground" />
             </div>
             <h3 className="text-sm font-semibold text-foreground">Belum ada data penyuluhan</h3>
             <p className="text-xs text-muted-foreground mt-1 max-w-xs">
