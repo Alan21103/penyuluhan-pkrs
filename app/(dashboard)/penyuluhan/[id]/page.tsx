@@ -29,15 +29,15 @@ export default async function DetailPenyuluhanPage({ params }: PageProps<"/penyu
     .eq("penyuluhan_id", id);
 
   return (
-    <div className="flex flex-col flex-1 overflow-auto">
+    <div className="flex flex-col flex-1">
       <Header title="Detail Formulir" userEmail={user?.email} />
-      <main className="flex-1 p-6">
+      <div className="flex-1 p-4 sm:p-6">
         {/* Top nav */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
           <Link href="/penyuluhan" className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
             <ChevronLeft className="w-4 h-4" /> Kembali ke Daftar
           </Link>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <Link href={`/penyuluhan/${id}/edit`}>
               <Button variant="outline" className="gap-2 rounded-xl" id="btn-edit-from-detail">
                 <Pencil className="w-4 h-4" /> Edit
@@ -47,9 +47,9 @@ export default async function DetailPenyuluhanPage({ params }: PageProps<"/penyu
           </div>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
           {/* Konten detail — 2/3 lebar */}
-          <div className="xl:col-span-2 space-y-5">
+          <div className="xl:col-span-2 space-y-4 sm:space-y-5">
             <DetailPenyuluhanContent data={penyuluhan} dokumen={dokumen ?? []} />
           </div>
 
@@ -62,7 +62,7 @@ export default async function DetailPenyuluhanPage({ params }: PageProps<"/penyu
             <RiwayatCard penyuluhan={penyuluhan} />
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
@@ -213,7 +213,7 @@ async function DetailPenyuluhanContent({ data, dokumen }: { data: any; dokumen: 
 
       {/* Tanda Tangan */}
       <SectionBox letter="✎" title="Tanda Tangan & Pengesahan">
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <p className="text-xs font-semibold text-foreground mb-1">Penanggung Jawab PKRS</p>
             <InfoRow label="Nama" value={data.pj_pkrs_nama} />

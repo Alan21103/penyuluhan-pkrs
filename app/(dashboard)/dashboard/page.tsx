@@ -47,25 +47,25 @@ export default async function DashboardPage() {
   const bulanNama = now.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
 
   return (
-    <div className="flex flex-col flex-1 overflow-auto">
+    <div className="flex flex-col flex-1">
       <Header title="Dashboard" userEmail={user?.email} />
-      <main className="flex-1 p-6 space-y-6">
+      <div className="flex-1 p-4 sm:p-5 lg:p-6 space-y-4 sm:space-y-6">
         {/* Sambutan */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
           <div>
-            <h2 className="text-xl font-semibold text-foreground">Selamat datang</h2>
+            <h2 className="text-lg sm:text-xl font-semibold text-foreground">Selamat datang</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
               Ringkasan kegiatan penyuluhan PKRS bulan{" "}
               <span className="font-medium text-foreground">{bulanNama}</span>
             </p>
           </div>
-          <p className="text-sm text-muted-foreground hidden sm:block">
+          <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
             {now.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
           </p>
         </div>
 
-        {/* Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+        {/* Stat Cards — 1 col mobile, 2 col sm, 4 col xl */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
           <StatCard
             id="stat-penyuluhan-bulan-ini"
             title="Penyuluhan Bulan Ini"
@@ -105,7 +105,7 @@ export default async function DashboardPage() {
 
         {/* Empty state */}
         {totalBulanIni === 0 && chartData.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-12 px-6 bg-card border border-dashed border-border rounded-2xl text-center">
+          <div className="flex flex-col items-center justify-center py-10 sm:py-12 px-6 bg-card border border-dashed border-border rounded-2xl text-center">
             <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mb-3">
               <ReportingIcon className="w-7 h-7 text-muted-foreground" />
             </div>
@@ -115,7 +115,7 @@ export default async function DashboardPage() {
             </p>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

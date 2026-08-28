@@ -72,7 +72,7 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
       {/* Card 1: Jumlah Penyuluhan per Bulan */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-[0_4px_24px_rgba(0,0,0,0.03)] flex flex-col justify-between">
         {/* Header with Title Tab & Horizontal Divider */}

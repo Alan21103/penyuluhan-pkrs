@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import Sidebar from "@/components/layout/Sidebar";
+import AppShell from "@/components/layout/AppShell";
 
 export default async function DashboardLayout({
   children,
@@ -16,15 +16,5 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Konten Utama */}
-      <div className="flex flex-col flex-1 overflow-hidden">
-        {children}
-      </div>
-    </div>
-  );
+  return <AppShell>{children}</AppShell>;
 }

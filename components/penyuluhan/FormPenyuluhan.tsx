@@ -106,17 +106,17 @@ function SectionCard({ id, label, icon: Icon, children }: {
   id: string; label: string; icon: React.ElementType; children: React.ReactNode;
 }) {
   return (
-    <div id={`section-${id}`} className="bg-card border border-border rounded-2xl overflow-hidden mb-6">
-      <div className="flex items-center gap-3 px-6 py-4 border-b border-border bg-muted/20">
-        <span className="w-7 h-7 rounded-lg bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shrink-0">
+    <div id={`section-${id}`} className="bg-card border border-border rounded-xl sm:rounded-2xl overflow-hidden mb-4 sm:mb-6 shadow-xs">
+      <div className="flex items-center gap-2.5 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-border bg-muted/20">
+        <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-primary text-primary-foreground text-[10px] sm:text-xs font-bold flex items-center justify-center shrink-0">
           {id === "EFG" ? "E–G" : id === "TTD" ? "✎" : id}
         </span>
-        <div className="flex items-center gap-2">
-          <Icon className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-base font-semibold text-foreground">{label}</h2>
+        <div className="flex items-center gap-2 min-w-0">
+          <Icon className="w-4 h-4 text-muted-foreground shrink-0" />
+          <h2 className="text-sm sm:text-base font-semibold text-foreground truncate">{label}</h2>
         </div>
       </div>
-      <div className="p-6">{children}</div>
+      <div className="p-4 sm:p-6">{children}</div>
     </div>
   );
 }
@@ -347,13 +347,13 @@ export default function FormPenyuluhan({ mode, userId, initialData }: FormPenyul
 
   return (
     <div className="flex h-full">
-      {/* ── Left Stepper Nav ── */}
-      <aside className="w-56 shrink-0 border-r border-border bg-card h-full overflow-y-auto">
+      {/* ── Left Stepper Nav (Desktop lg+) ── */}
+      <aside className="hidden lg:flex flex-col w-56 shrink-0 border-r border-border bg-card h-full overflow-y-auto">
         {/* Back + Title */}
         <div className="p-4 border-b border-border">
           <button
             onClick={() => router.push("/penyuluhan")}
-            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-3"
+            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-3 cursor-pointer"
             id="btn-back-penyuluhan"
           >
             <ChevronLeft className="w-4 h-4" /> Kembali
@@ -375,7 +375,7 @@ export default function FormPenyuluhan({ mode, userId, initialData }: FormPenyul
                 id={`nav-section-${sec.id}`}
                 onClick={() => scrollTo(sec.id)}
                 className={cn(
-                  "w-full flex items-start gap-3 px-3 py-2.5 rounded-xl text-left transition-all",
+                  "w-full flex items-start gap-3 px-3 py-2.5 rounded-xl text-left transition-all cursor-pointer",
                   isActive
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
@@ -405,36 +405,67 @@ export default function FormPenyuluhan({ mode, userId, initialData }: FormPenyul
       {/* ── Right: Form Content ── */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top action bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-card shrink-0">
-          <div>
-            <h1 className="text-lg font-bold text-foreground">Formulir Pelaksanaan</h1>
-            <p className="text-xs text-muted-foreground">Penyuluhan Kelompok Promosi Kesehatan Rumah Sakit (PKRS)</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-border bg-card shrink-0">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => router.push("/penyuluhan")}
+              className="lg:hidden p-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground mr-1 shrink-0"
+              title="Kembali"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <div>
+              <h1 className="text-base sm:text-lg font-bold text-foreground leading-tight">Formulir Pelaksanaan</h1>
+              <p className="text-xs text-muted-foreground hidden sm:block">Penyuluhan Kelompok Promosi Kesehatan Rumah Sakit (PKRS)</p>
+            </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
               id="btn-simpan-draft"
-              className="rounded-xl gap-2"
+              className="rounded-xl gap-1.5 sm:gap-2 flex-1 sm:flex-initial text-xs sm:text-sm h-9 sm:h-10"
               onClick={() => handleSave("draft")}
               disabled={saving}
             >
-              <Save className="w-4 h-4" />
-              Simpan Draft
+              <Save className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span>Simpan Draft</span>
             </Button>
             <Button
               id="btn-selesai"
-              className="rounded-xl gap-2 bg-emerald-600 hover:bg-emerald-700"
+              className="rounded-xl gap-1.5 sm:gap-2 bg-emerald-600 hover:bg-emerald-700 flex-1 sm:flex-initial text-xs sm:text-sm h-9 sm:h-10"
               onClick={() => handleSave("selesai")}
               disabled={saving}
             >
-              <CheckCircle className="w-4 h-4" />
-              Simpan & Selesai
+              <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span>{saving ? "Menyimpan..." : "Simpan & Selesai"}</span>
             </Button>
           </div>
         </div>
 
+        {/* Mobile Horizontal Stepper Navigation (< lg) */}
+        <div className="lg:hidden flex items-center gap-1.5 overflow-x-auto px-4 py-2 bg-muted/40 border-b border-border scrollbar-none shrink-0">
+          {NAV_SECTIONS.map((sec) => {
+            const isActive = activeSection === sec.id;
+            return (
+              <button
+                key={sec.id}
+                onClick={() => scrollTo(sec.id)}
+                className={cn(
+                  "px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0",
+                  isActive
+                    ? "bg-primary text-primary-foreground shadow-xs"
+                    : "bg-background border border-border text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <span>{sec.id === "EFG" ? "E-G" : sec.id === "TTD" ? "TTD" : sec.id}.</span>
+                <span>{sec.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
         {/* Scrollable form area */}
-        <div ref={contentRef} className="flex-1 overflow-y-auto px-6 py-6">
+        <div ref={contentRef} className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 sm:py-6">
 
           {/* ══ SECTION A — Identitas Kegiatan ══ */}
           <SectionCard id="A" label="Identitas Kegiatan" icon={Info}>
@@ -889,12 +920,12 @@ export default function FormPenyuluhan({ mode, userId, initialData }: FormPenyul
             </div>
 
             {/* Bottom action (duplikat di bawah form) */}
-            <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-border">
-              <Button variant="outline" id="btn-draft-bottom" className="rounded-xl gap-2"
+            <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 mt-6 pt-6 border-t border-border">
+              <Button variant="outline" id="btn-draft-bottom" className="rounded-xl gap-2 w-full sm:w-auto"
                 onClick={() => handleSave("draft")} disabled={saving}>
                 <Save className="w-4 h-4" /> Simpan Draft
               </Button>
-              <Button id="btn-submit-bottom" className="rounded-xl gap-2 bg-emerald-600 hover:bg-emerald-700"
+              <Button id="btn-submit-bottom" className="rounded-xl gap-2 bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto"
                 onClick={() => handleSave("selesai")} disabled={saving}>
                 <CheckCircle className="w-4 h-4" />
                 {saving ? "Menyimpan..." : "Simpan & Selesai"}

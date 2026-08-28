@@ -10,7 +10,7 @@ interface HeaderProps {
 
 export default function Header({ title, userEmail }: HeaderProps) {
   return (
-    <header className="h-16 flex items-center justify-between px-6 bg-card border-b border-border shrink-0">
+    <header className="hidden lg:flex h-16 items-center justify-between px-6 bg-card border-b border-border shrink-0">
       {/* Judul Halaman */}
       <div>
         <h1 className="text-lg font-semibold text-foreground">{title}</h1>

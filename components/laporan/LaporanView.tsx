@@ -79,18 +79,18 @@ export default function LaporanView({ data }: LaporanViewProps) {
   const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() - 2 + i);
 
   return (
-    <div>
+    <div className="space-y-4 sm:space-y-6">
       {/* ── Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 className="text-xl font-semibold text-foreground">Laporan Rekap Penyuluhan</h2>
-          <p className="text-sm text-muted-foreground mt-0.5">UPTD KHUSUS RSUD Dr. M. Yunus Bengkulu</p>
+          <h2 className="text-lg sm:text-xl font-semibold text-foreground">Laporan Rekap Penyuluhan</h2>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">UPTD KHUSUS RSUD Dr. M. Yunus Bengkulu</p>
         </div>
         <Button
           id="btn-export-excel"
           onClick={handleExcel}
           disabled={filtered.length === 0}
-          className="gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
+          className="gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white w-full sm:w-auto"
         >
           <FileSpreadsheet className="w-4 h-4" />
           Export Excel ({filtered.length} data)
@@ -98,8 +98,8 @@ export default function LaporanView({ data }: LaporanViewProps) {
       </div>
 
       {/* ── Filter Card ── */}
-      <div className="bg-card border border-border rounded-2xl p-5 mb-5 shadow-sm">
-        <div className="flex items-center gap-2 mb-4">
+      <div className="bg-card border border-border rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-xs">
+        <div className="flex items-center gap-2 mb-3 sm:mb-4">
           <Filter className="w-4 h-4 text-primary" />
           <h3 className="text-sm font-semibold text-foreground">Filter Data</h3>
         </div>
@@ -112,7 +112,7 @@ export default function LaporanView({ data }: LaporanViewProps) {
               id={`filter-mode-${m}`}
               onClick={() => { setFilterMode(m); setPage(1); }}
               className={cn(
-                "px-4 py-1.5 rounded-xl text-sm font-medium border transition-all",
+                "px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium border transition-all cursor-pointer",
                 filterMode === m
                   ? "bg-primary text-primary-foreground border-primary"
                   : "bg-background text-muted-foreground border-input hover:border-primary/40"
@@ -124,33 +124,33 @@ export default function LaporanView({ data }: LaporanViewProps) {
         </div>
 
         {filterMode === "bulan" ? (
-          <div className="flex flex-wrap gap-3 items-end">
-            <div>
+          <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
+            <div className="flex-1 sm:max-w-xs">
               <label className="block text-xs font-medium text-muted-foreground mb-1">Bulan</label>
               <select
                 id="filter-bulan"
                 value={bulan}
                 onChange={e => { setBulan(Number(e.target.value)); setPage(1); }}
-                className="h-9 px-3 rounded-xl border border-input bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full h-10 px-3 rounded-xl border border-input bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 {MONTHS.map((m, i) => <option key={i} value={i}>{m}</option>)}
               </select>
             </div>
-            <div>
+            <div className="w-full sm:w-36">
               <label className="block text-xs font-medium text-muted-foreground mb-1">Tahun</label>
               <select
                 id="filter-tahun"
                 value={tahun}
                 onChange={e => { setTahun(Number(e.target.value)); setPage(1); }}
-                className="h-9 px-3 rounded-xl border border-input bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full h-10 px-3 rounded-xl border border-input bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 {years.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
             </div>
           </div>
         ) : (
-          <div className="flex flex-wrap gap-4 items-end">
-            <div className="w-48">
+          <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
+            <div className="w-full sm:w-52">
               <label className="block text-xs font-medium text-muted-foreground mb-1">Dari Tanggal</label>
               <DatePicker
                 id="filter-from"
@@ -160,7 +160,7 @@ export default function LaporanView({ data }: LaporanViewProps) {
                 locale="id"
               />
             </div>
-            <div className="w-48">
+            <div className="w-full sm:w-52">
               <label className="block text-xs font-medium text-muted-foreground mb-1">Sampai Tanggal</label>
               <DatePicker
                 id="filter-to"
@@ -173,7 +173,7 @@ export default function LaporanView({ data }: LaporanViewProps) {
             {(fromDate || toDate) && (
               <button
                 onClick={() => { setFromDate(""); setToDate(""); setPage(1); }}
-                className="h-11 px-3.5 rounded-xl border border-border text-sm text-muted-foreground hover:text-destructive flex items-center gap-1 transition-colors cursor-pointer"
+                className="h-11 px-3.5 rounded-xl border border-border text-sm text-muted-foreground hover:text-destructive flex items-center justify-center gap-1 transition-colors cursor-pointer w-full sm:w-auto"
               >
                 <X className="w-3.5 h-3.5" /> Reset
               </button>
@@ -183,22 +183,87 @@ export default function LaporanView({ data }: LaporanViewProps) {
       </div>
 
       {/* ── Stat Cards ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         {[
           { label: "Total Kegiatan", value: filtered.length, suffix: "kegiatan", color: "text-primary" },
           { label: "Total Peserta", value: totalPeserta.toLocaleString("id-ID"), suffix: "orang", color: "text-emerald-600" },
           { label: "Rata-rata Pemahaman", value: `${avgPemahaman.toFixed(1)}%`, suffix: "rata-rata", color: avgPemahaman >= 70 ? "text-emerald-600" : "text-amber-600" },
         ].map((s) => (
-          <div key={s.label} className="bg-card border border-border rounded-2xl px-5 py-4 shadow-sm">
+          <div key={s.label} className="bg-card border border-border rounded-xl sm:rounded-2xl px-4 sm:px-5 py-3.5 sm:py-4 shadow-xs">
             <p className="text-xs text-muted-foreground">{s.label}</p>
-            <p className={cn("text-2xl font-bold mt-1", s.color)}>{s.value}</p>
-            <p className="text-xs text-muted-foreground">{s.suffix}</p>
+            <p className={cn("text-xl sm:text-2xl font-bold mt-1", s.color)}>{s.value}</p>
+            <p className="text-[11px] sm:text-xs text-muted-foreground">{s.suffix}</p>
           </div>
         ))}
       </div>
 
-      {/* ── Table ── */}
-      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+      {/* ── Mobile Card View (< md) ── */}
+      <div className="md:hidden space-y-3">
+        {paginated.length === 0 ? (
+          <div className="bg-card border border-border rounded-xl p-8 text-center text-muted-foreground text-sm">
+            Tidak ada data untuk periode yang dipilih
+          </div>
+        ) : (
+          paginated.map((d, i) => {
+            const st = STATUS_CONFIG[d.status] ?? STATUS_CONFIG.draft;
+            return (
+              <div key={d.id} className="bg-card border border-border rounded-xl p-4 shadow-xs space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground font-medium">#{((page - 1) * PAGE_SIZE) + i + 1} · {fmtDate(d.hari_tanggal)}</span>
+                  <span className={cn("text-xs px-2.5 py-0.5 rounded-full border font-medium", st.className)}>
+                    {st.label}
+                  </span>
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground text-sm">{d.topik}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{d.sasaran}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground pt-1 border-t border-border/60">
+                  <div><span className="text-foreground/70 font-medium">Lokasi: </span>{d.tempat}</div>
+                  <div><span className="text-foreground/70 font-medium">Peserta: </span>{d.jumlah_peserta} org</div>
+                  <div className="col-span-2">
+                    <span className="text-foreground/70 font-medium">Penyuluh: </span>
+                    {(d.penyuluh ?? []).join(", ") || "-"}
+                  </div>
+                  <div className="col-span-2 flex items-center justify-between pt-1">
+                    <span className="text-foreground/70 font-medium">Pemahaman:</span>
+                    <span className={cn(
+                      "font-bold text-xs px-2 py-0.5 rounded-md",
+                      d.jumlah_peserta_e > 0 && (d.jumlah_paham / d.jumlah_peserta_e) >= 0.7
+                        ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30"
+                        : "bg-amber-50 text-amber-700 dark:bg-amber-950/30"
+                    )}>
+                      {pct(d.jumlah_paham, d.jumlah_peserta_e)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+
+        {/* Mobile Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-1 py-2">
+            <p className="text-xs text-muted-foreground">
+              {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} dari {filtered.length}
+            </p>
+            <div className="flex gap-1">
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
+                className="p-1.5 rounded-lg border border-border disabled:opacity-40 hover:bg-muted transition-colors">
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
+                className="p-1.5 rounded-lg border border-border disabled:opacity-40 hover:bg-muted transition-colors">
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── Desktop Table View (md+) ── */}
+      <div className="hidden md:block bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

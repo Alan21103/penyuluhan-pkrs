@@ -78,15 +78,15 @@ export default function PenyuluhanTable({ data }: { data: PenyuluhanRow[] }) {
   return (
     <>
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-foreground">Daftar Penyuluhan</h2>
+          <h2 className="text-lg sm:text-xl font-semibold text-foreground">Daftar Penyuluhan</h2>
           <p className="text-sm text-muted-foreground mt-0.5">
             {data.length} kegiatan terdaftar
           </p>
         </div>
-        <Link href="/penyuluhan/tambah">
-          <Button id="btn-tambah-penyuluhan" className="gap-2 rounded-xl">
+        <Link href="/penyuluhan/tambah" className="sm:shrink-0">
+          <Button id="btn-tambah-penyuluhan" className="gap-2 rounded-xl w-full sm:w-auto">
             <Plus className="w-4 h-4" />
             Tambah Kegiatan
           </Button>
@@ -94,7 +94,7 @@ export default function PenyuluhanTable({ data }: { data: PenyuluhanRow[] }) {
       </div>
 
       {/* Search */}
-      <div className="relative mb-4 max-w-sm">
+      <div className="relative mb-4 w-full sm:max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <input
           id="input-search-penyuluhan"
@@ -106,8 +106,81 @@ export default function PenyuluhanTable({ data }: { data: PenyuluhanRow[] }) {
         />
       </div>
 
-      {/* Table Card */}
-      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+      {/* ===== MOBILE CARD VIEW (< md) ===== */}
+      <div className="md:hidden space-y-3 mb-4">
+        {paginated.length === 0 ? (
+          <div className="flex flex-col items-center gap-3 text-muted-foreground py-12">
+            <FileText className="w-10 h-10 opacity-30" />
+            <p className="text-sm font-medium">{search ? "Tidak ada hasil pencarian" : "Belum ada data penyuluhan"}</p>
+            {!search && (
+              <Link href="/penyuluhan/tambah">
+                <Button variant="outline" size="sm" className="rounded-xl gap-1.5">
+                  <Plus className="w-3.5 h-3.5" /> Tambah Pertama
+                </Button>
+              </Link>
+            )}
+          </div>
+        ) : paginated.map((row, i) => {
+          const status = STATUS_CONFIG[row.status] ?? STATUS_CONFIG.draft;
+          const StatusIcon = status.icon;
+          return (
+            <div key={row.id} className="bg-card border border-border rounded-2xl p-4 shadow-sm space-y-3">
+              {/* Top: date + status */}
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground font-medium">{fmt(row.hari_tanggal)}</span>
+                <span className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border", status.className)}>
+                  <StatusIcon className="w-3 h-3" />
+                  {status.label}
+                </span>
+              </div>
+              {/* Topik */}
+              <Link href={`/penyuluhan/${row.id}`}>
+                <p className="font-semibold text-foreground text-sm leading-snug hover:text-primary transition-colors">{row.topik}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{row.sasaran}</p>
+              </Link>
+              {/* Meta */}
+              <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                <div><span className="font-medium text-foreground/70">Tempat: </span>{row.tempat}</div>
+                <div><span className="font-medium text-foreground/70">Peserta: </span>{row.jumlah_peserta} org</div>
+                <div className="col-span-2"><span className="font-medium text-foreground/70">Penyuluh: </span>{row.penyuluh?.join(", ") || "-"}</div>
+              </div>
+              {/* Actions */}
+              <div className="flex items-center gap-2 pt-1 border-t border-border">
+                <button id={`btn-pdf-${row.id}`} title="Export PDF"
+                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-50 transition-colors border border-border"
+                  onClick={async () => {
+                    const { data } = await supabase.from("penyuluhan").select("*").eq("id", row.id).single();
+                    if (data) { const doc = await generatePDF(data as any); setPreviewDoc(doc); setPreviewFileName(getPDFFilename(data as any)); }
+                  }}>
+                  <FileDown className="w-3.5 h-3.5" /> PDF
+                </button>
+                <Link href={`/penyuluhan/${row.id}/edit`} className="flex-1">
+                  <button id={`btn-edit-${row.id}`} className="w-full flex items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/8 transition-colors border border-border">
+                    <Pencil className="w-3.5 h-3.5" /> Edit
+                  </button>
+                </Link>
+                <button id={`btn-delete-${row.id}`} onClick={() => setDeleteId(row.id)}
+                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/8 transition-colors border border-border">
+                  <Trash2 className="w-3.5 h-3.5" /> Hapus
+                </button>
+              </div>
+            </div>
+          );
+        })}
+        {/* Mobile Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-1 py-2">
+            <p className="text-xs text-muted-foreground">{(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} dari {filtered.length}</p>
+            <div className="flex gap-1">
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="p-1.5 rounded-lg border border-border disabled:opacity-40 hover:bg-muted"><ChevronLeft className="w-4 h-4" /></button>
+              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="p-1.5 rounded-lg border border-border disabled:opacity-40 hover:bg-muted"><ChevronRight className="w-4 h-4" /></button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ===== DESKTOP TABLE VIEW (md+) ===== */}
+      <div className="hidden md:block bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

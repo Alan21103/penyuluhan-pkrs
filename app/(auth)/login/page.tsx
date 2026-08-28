@@ -104,9 +104,13 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* ====== PANEL KANAN — Form Selamat Datang dengan Border Radius Lengkung ====== */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-12 lg:p-14 bg-background lg:-ml-8 lg:rounded-l-[40px] xl:rounded-l-[48px] z-10 shadow-2xl relative">
-        <div className="w-full max-w-md">
+      {/* ====== PANEL KANAN — Form Selamat Datang ====== */}
+      {/* Mobile: full screen dengan background gradient agar tidak polos */}
+      <div className="flex-1 flex items-start lg:items-center justify-center bg-background lg:-ml-8 lg:rounded-l-[40px] xl:rounded-l-[48px] z-10 shadow-2xl relative overflow-y-auto">
+        {/* Mobile background accent */}
+        <div className="lg:hidden absolute inset-0 bg-gradient-to-br from-blue-50/80 via-white to-sky-50/50 pointer-events-none" />
+
+        <div className="w-full max-w-md px-5 py-8 sm:px-10 sm:py-12 relative z-10">
 
           {/* Logo Mobile (hanya muncul di layar kecil) */}
           <div className="lg:hidden flex items-center gap-3 mb-8">
