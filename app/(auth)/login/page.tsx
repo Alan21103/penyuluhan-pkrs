@@ -41,12 +41,12 @@ export default function LoginPage() {
       <div className="hidden lg:flex lg:w-[52%] xl:w-[55%] relative overflow-hidden flex-col shrink-0">
         {/* Gambar Gedung RS sebagai background */}
         <Image
-          src="/images/LoginImage.jpg"
+          src="/images/LoginImage2.jpg"
           alt="RSUD Dr. M. Yunus Bengkulu"
           fill
           priority
           sizes="55vw"
-          className="object-cover object-center"
+          style={{ objectFit: "cover", objectPosition: "center 50%" }}
         />
 
         {/* Overlay gradient biru */}
@@ -74,7 +74,7 @@ export default function LoginPage() {
           </div>
 
           {/* Teks tengah */}
-          <div className="my-auto max-w-md py-12">
+          <div className="mt-auto max-w-md pb-6">
             {/* Badge */}
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-white/90 text-xs font-medium mb-5 backdrop-blur-md">
               <span className="w-1.5 h-1.5 rounded-full bg-sky-300 animate-pulse" />
@@ -82,12 +82,15 @@ export default function LoginPage() {
             </span>
 
             <h1 className="text-4xl xl:text-5xl font-extrabold text-white leading-tight mb-4 tracking-tight">
-              Sistem Penyuluhan
-              <span className="block text-sky-300 font-black">PKRS Digital</span>
+              Selamat Datang di
+              <span className="block text-sky-300 font-black">SIPINTAR PKRS</span>
             </h1>
 
             <p className="text-white/75 text-base leading-relaxed">
-              Platform pengelolaan formulir penyuluhan kelompok secara digital — efisien, terstandar, dan terdokumentasi.
+              <span className="font-semibold text-white">S</span>istem{" "}
+              <span className="font-semibold text-white">P</span>elaporan dan{" "}
+              <span className="font-semibold text-white">A</span>dministrasi{" "}
+              <span className="font-semibold text-white">T</span>erpadu PKRS — Pintar Catat, Pintar Lapor, Pintar Tingkatkan Mutu.
             </p>
           </div>
 
@@ -96,7 +99,7 @@ export default function LoginPage() {
             <p className="text-white/50 text-xs">
               © {new Date().getFullYear()} RSUD Dr. M. Yunus Bengkulu
             </p>
-            <p className="text-white/50 text-xs font-medium">PKRS — v1.0</p>
+            <p className="text-white/50 text-xs font-medium">SIPINTAR PKRS — v1.0</p>
           </div>
         </div>
       </div>
@@ -125,10 +128,10 @@ export default function LoginPage() {
           {/* Judul Form */}
           <div className="mb-8">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-              Selamat Datang
+              Selamat Datang 
             </h2>
             <p className="text-muted-foreground mt-1.5 text-sm">
-              Masuk ke Sistem Penyuluhan PKRS — RSUD Dr. M. Yunus Bengkulu
+              Masuk ke <span className="font-semibold text-foreground">SIPINTAR PKRS</span> — RSUD Dr. M. Yunus Bengkulu
             </p>
           </div>
 

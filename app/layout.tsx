@@ -16,10 +16,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sistem Informasi PKRS",
+  title: "SIPINTAR PKRS — Sistem Pelaporan dan Administrasi Terpadu PKRS",
   description:
-    "Aplikasi manajemen formulir pelaksanaan penyuluhan kelompok Promosi Kesehatan Rumah Sakit (PKRS)",
-  keywords: ["PKRS", "penyuluhan kesehatan", "promosi kesehatan", "rumah sakit"],
+    "SIPINTAR adalah platform digital pelaporan dan administrasi terpadu kegiatan Promosi Kesehatan Rumah Sakit (PKRS) RSUD Dr. M. Yunus Bengkulu.",
+  keywords: ["SIPINTAR", "PKRS", "penyuluhan kesehatan", "promosi kesehatan", "rumah sakit", "RSUD Dr. M. Yunus"],
   icons: {
     icon: [
       { url: "/images/Logo-removebg-preview.png" },
