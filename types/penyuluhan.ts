@@ -114,6 +114,9 @@ export interface DokumenUpload {
   jenis: JenisDokumen;
   file_url: string;
   file_name: string;
+  file_size?: number;
+  file_type?: string;
+  is_external_link?: boolean;
   uploaded_at: string;
 }
 

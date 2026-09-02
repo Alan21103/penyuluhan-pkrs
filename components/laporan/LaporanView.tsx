@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { generateExcel } from "@/lib/excel-generator";
+import { generateExcel } from "@/services/export";
+import { laporanService } from "@/services/laporan.service";
 import { cn } from "@/lib/utils";
 import { FileSpreadsheet, Filter, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -34,33 +35,24 @@ export default function LaporanView({ data }: LaporanViewProps) {
   const [page, setPage] = useState(1);
 
   const filtered = useMemo(() => {
-    if (filterMode === "bulan") {
-      return data.filter((d) => {
-        if (!d.hari_tanggal) return false;
-        const dt = new Date(d.hari_tanggal);
-        return dt.getMonth() === bulan && dt.getFullYear() === tahun;
-      });
-    } else {
-      return data.filter((d) => {
-        if (!d.hari_tanggal) return false;
-        if (fromDate && d.hari_tanggal < fromDate) return false;
-        if (toDate && d.hari_tanggal > toDate) return false;
-        return true;
-      });
-    }
+    return laporanService.filterData(data, {
+      filterMode,
+      bulan,
+      tahun,
+      fromDate,
+      toDate,
+    });
   }, [data, filterMode, bulan, tahun, fromDate, toDate]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const totalPeserta = filtered.reduce((s, d) => s + (d.jumlah_peserta ?? 0), 0);
-  const avgPemahaman =
-    filtered.length > 0
-      ? filtered.reduce((s, d) => {
-          const p = d.jumlah_peserta_e > 0 ? (d.jumlah_paham / d.jumlah_peserta_e) * 100 : 0;
-          return s + p;
-        }, 0) / filtered.length
-      : 0;
+  const stats = useMemo(() => {
+    return laporanService.calculateStats(filtered);
+  }, [filtered]);
+
+  const totalPeserta = stats.totalPeserta;
+  const avgPemahaman = stats.avgPemahaman;
 
   const handleExcel = () => {
     const label =

@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Header from "@/components/layout/Header";
 import StatusToggle from "@/components/penyuluhan/ApprovalFlow";
 import DetailPenyuluhanView from "@/components/penyuluhan/DetailPenyuluhanView";
+import DokumentasiGallery from "@/components/penyuluhan/DokumentasiGallery";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { Pencil, ChevronLeft, Check } from "lucide-react";
@@ -97,6 +98,9 @@ async function DetailPenyuluhanContent({ data, dokumen }: { data: any; dokumen: 
 
   const dokumenWithUrls = await Promise.all(
     dokumen.map(async (d: any) => {
+      if (d.is_external_link || d.file_url.startsWith("http")) {
+        return { ...d, signed_url: d.file_url };
+      }
       const { data: urlData } = await supabase.storage
         .from("penyuluhan-files")
         .createSignedUrl(d.file_url, 3600);
@@ -206,25 +210,10 @@ async function DetailPenyuluhanContent({ data, dokumen }: { data: any; dokumen: 
 
       {/* Section G — Dokumen */}
       <SectionBox letter="G" title="Dokumentasi">
-        <p className="text-xs text-muted-foreground mb-3">
-          Checklist: {(data.dokumen_checklist ?? []).join(", ") || "-"}
-        </p>
-        {dokumen.length > 0 ? (
-          <div className="space-y-2">
-            {dokumenWithUrls.map((d: any) => (
-              <div key={d.id} className="flex items-center gap-2 p-2.5 rounded-lg bg-muted/40 border border-border">
-                <span className="text-xs font-medium text-foreground">{d.jenis}</span>
-                <span className="text-xs text-muted-foreground flex-1 truncate">{d.file_name}</span>
-                {d.signed_url && (
-                  <a href={d.signed_url} target="_blank" rel="noopener noreferrer"
-                    className="text-xs text-primary hover:underline">Buka</a>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-xs text-muted-foreground italic">Belum ada dokumen diupload</p>
-        )}
+        <DokumentasiGallery
+          dokumen={dokumenWithUrls}
+          dokumenChecklist={data.dokumen_checklist ?? []}
+        />
       </SectionBox>
 
       {/* Tanda Tangan */}
