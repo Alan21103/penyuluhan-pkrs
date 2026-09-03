@@ -107,9 +107,10 @@ export default function SignaturePad({ id, label, value, onChange }: SignaturePa
             type="button"
             id={`${id}-edit`}
             onClick={() => { setMode("pad"); setSaved(false); }}
-            className="absolute top-2 right-2 p-1.5 rounded-lg bg-card border border-border text-xs text-muted-foreground hover:text-primary hover:border-primary/40 transition-all opacity-0 group-hover:opacity-100"
+            className="absolute top-2 right-2 p-1.5 rounded-lg bg-card border border-border text-muted-foreground hover:text-primary hover:border-primary/40 hover:bg-primary/5 transition-all"
+            title="Ubah tanda tangan"
           >
-            Ubah
+            <Pen className="w-3.5 h-3.5" />
           </button>
           <p className="text-[10px] text-emerald-600 flex items-center gap-1 mt-1">
             <Check className="w-3 h-3" /> Tanda tangan tersimpan

@@ -289,30 +289,79 @@ export default function FormPenyuluhan({ mode, userId, initialData }: FormPenyul
           </nav>
         </aside>
 
-        {/* Mobile / Tablet Horizontal Navigation Tabs */}
-        <div className="lg:hidden flex overflow-x-auto gap-1.5 p-2 border-b border-border bg-muted/20 shrink-0">
-          {NAV_SECTIONS.map((sec) => {
-            const isActive = activeSection === sec.id;
-            return (
-              <button
-                key={sec.id}
-                onClick={() => scrollTo(sec.id)}
-                className={cn(
-                  "px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer",
-                  isActive
-                    ? "bg-primary text-primary-foreground shadow-xs"
-                    : "bg-background border border-border text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <span>{sec.id === "EFG" ? "E-G" : sec.id === "TTD" ? "TTD" : sec.id}.</span>
-                <span>{sec.label}</span>
-              </button>
-            );
-          })}
+        {/* Mobile / Tablet: Nav Tabs + Form Content — stacked vertically */}
+        <div className="lg:hidden flex-1 flex flex-col overflow-hidden min-h-0">
+          {/* Mobile Horizontal Navigation Tabs */}
+          <div className="flex overflow-x-auto gap-1.5 p-2 border-b border-border bg-muted/20 shrink-0">
+            {NAV_SECTIONS.map((sec) => {
+              const isActive = activeSection === sec.id;
+              return (
+                <button
+                  key={sec.id}
+                  onClick={() => scrollTo(sec.id)}
+                  className={cn(
+                    "px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer",
+                    isActive
+                      ? "bg-primary text-primary-foreground shadow-xs"
+                      : "bg-background border border-border text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <span>{sec.id === "EFG" ? "E-G" : sec.id === "TTD" ? "TTD" : sec.id}.</span>
+                  <span>{sec.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Scrollable Form Content Area (mobile) */}
+          <div ref={contentRef} className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 sm:py-6 pb-24">
+            {/* Section A — Identitas Kegiatan */}
+            <SectionIdentitas
+              form={form}
+              set={set}
+              addItem={addItem}
+              updateItem={updateItem}
+              removeItem={removeItem}
+              initialSasaran={initialData?.sasaran}
+            />
+
+            {/* Section B & C — Tujuan & Materi */}
+            <SectionTujuanMateri
+              form={form}
+              addItem={addItem}
+              updateItem={updateItem}
+              removeItem={removeItem}
+            />
+
+            {/* Section D — Pelaksanaan Checklist */}
+            <SectionChecklist
+              form={form}
+              set={set}
+            />
+
+            {/* Section E, F, G — Evaluasi & Dokumentasi */}
+            <SectionEvaluasiDokumentasi
+              form={form}
+              set={set}
+              mode={mode}
+              userId={userId}
+              penyuluhanId={initialData?.id}
+              stagedFiles={stagedFiles}
+              onStagedFilesChange={setStagedFiles}
+            />
+
+            {/* Section TTD — Pengesahan & Tanda Tangan */}
+            <SectionPengesahan
+              form={form}
+              set={set}
+              saving={saving}
+              onSave={handleSave}
+            />
+          </div>
         </div>
 
-        {/* Scrollable Form Content Area */}
-        <div ref={contentRef} className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 sm:py-6 pb-24 lg:pb-12">
+        {/* Desktop: Scrollable Form Content Area */}
+        <div ref={contentRef} className="hidden lg:block flex-1 overflow-y-auto px-6 py-6 pb-12">
           {/* Section A — Identitas Kegiatan */}
           <SectionIdentitas
             form={form}
