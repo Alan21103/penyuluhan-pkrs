@@ -15,6 +15,8 @@ import {
   ChevronRight,
   ChevronDown,
   X,
+  ClipboardCheck,
+  Activity,
 } from "lucide-react";
 
 interface NavSubItem {
@@ -40,6 +42,24 @@ const navItems: NavItem[] = [
     subItems: [
       { label: "Semua Kegiatan", href: "/penyuluhan" },
       { label: "Tambah Kegiatan", href: "/penyuluhan/tambah" },
+    ],
+  },
+  {
+    label: "Supervisi Bulanan",
+    href: "/supervisi",
+    icon: ClipboardCheck,
+    subItems: [
+      { label: "Semua Supervisi", href: "/supervisi" },
+      { label: "Tambah Supervisi", href: "/supervisi/tambah" },
+    ],
+  },
+  {
+    label: "Audit Indikator Mutu",
+    href: "/audit-mutu",
+    icon: Activity,
+    subItems: [
+      { label: "Semua Audit", href: "/audit-mutu" },
+      { label: "Tambah Audit", href: "/audit-mutu/tambah" },
     ],
   },
   { label: "Laporan", href: "/laporan", icon: FileSpreadsheet },
@@ -241,9 +261,22 @@ export function MobileTopBar({ onMenuOpen }: { onMenuOpen: () => void }) {
   const pathname = usePathname();
   const currentPage = navItems.find((item) => pathname === item.href || item.subItems?.some((sub) => pathname === sub.href || pathname.startsWith(sub.href + "/")));
   let pageTitle = currentPage?.label ?? "SIPINTAR PKRS";
-  if (pathname.includes("/tambah")) pageTitle = "Tambah Kegiatan";
-  if (pathname.includes("/edit")) pageTitle = "Edit Kegiatan";
-  if (pathname.match(/\/penyuluhan\/[^/]+$/) && !pathname.includes("/tambah")) pageTitle = "Detail Penyuluhan";
+  if (pathname.startsWith("/penyuluhan")) {
+    if (pathname.includes("/tambah")) pageTitle = "Tambah Penyuluhan";
+    else if (pathname.includes("/edit")) pageTitle = "Edit Penyuluhan";
+    else if (pathname === "/penyuluhan") pageTitle = "Data Penyuluhan";
+    else pageTitle = "Detail Penyuluhan";
+  } else if (pathname.startsWith("/supervisi")) {
+    if (pathname.includes("/tambah")) pageTitle = "Tambah Supervisi";
+    else if (pathname.includes("/edit")) pageTitle = "Edit Supervisi";
+    else if (pathname === "/supervisi") pageTitle = "Supervisi Bulanan";
+    else pageTitle = "Detail Supervisi";
+  } else if (pathname.startsWith("/audit-mutu")) {
+    if (pathname.includes("/tambah")) pageTitle = "Tambah Audit Mutu";
+    else if (pathname.includes("/edit")) pageTitle = "Edit Audit Mutu";
+    else if (pathname === "/audit-mutu") pageTitle = "Audit Indikator Mutu";
+    else pageTitle = "Detail Audit Mutu";
+  }
 
   return (
     <header className="lg:hidden h-14 flex items-center justify-between px-4 bg-white border-b border-slate-200 shrink-0 z-30">

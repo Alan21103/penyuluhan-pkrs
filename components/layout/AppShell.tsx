@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
@@ -16,6 +16,8 @@ import {
   ChevronDown,
   X,
   Menu,
+  ClipboardCheck,
+  Activity,
 } from "lucide-react";
 
 interface NavSubItem {
@@ -25,6 +27,7 @@ interface NavSubItem {
 
 interface NavItem {
   label: string;
+  shortLabel?: string;
   href: string;
   icon: any;
   subItems?: NavSubItem[];
@@ -33,11 +36,13 @@ interface NavItem {
 const navItems: NavItem[] = [
   {
     label: "Dashboard",
+    shortLabel: "Beranda",
     href: "/dashboard",
     icon: LayoutDashboard,
   },
   {
     label: "Data Penyuluhan",
+    shortLabel: "Penyuluhan",
     href: "/penyuluhan",
     icon: ClipboardList,
     subItems: [
@@ -46,7 +51,28 @@ const navItems: NavItem[] = [
     ],
   },
   {
+    label: "Supervisi Bulanan",
+    shortLabel: "Supervisi",
+    href: "/supervisi",
+    icon: ClipboardCheck,
+    subItems: [
+      { label: "Semua Supervisi", href: "/supervisi" },
+      { label: "Tambah Supervisi", href: "/supervisi/tambah" },
+    ],
+  },
+  {
+    label: "Audit Indikator Mutu",
+    shortLabel: "Audit Mutu",
+    href: "/audit-mutu",
+    icon: Activity,
+    subItems: [
+      { label: "Semua Audit", href: "/audit-mutu" },
+      { label: "Tambah Audit", href: "/audit-mutu/tambah" },
+    ],
+  },
+  {
     label: "Laporan",
+    shortLabel: "Laporan",
     href: "/laporan",
     icon: FileSpreadsheet,
   },
@@ -63,9 +89,18 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
 
-  // Close mobile drawer whenever route changes
+  // Close mobile drawer whenever route changes and auto-open active submenus
   useEffect(() => {
     setMobileDrawerOpen(false);
+    navItems.forEach((item) => {
+      if (
+        item.subItems?.some(
+          (sub) => pathname === sub.href || pathname.startsWith(sub.href + "/")
+        )
+      ) {
+        setOpenSubmenus((prev) => ({ ...prev, [item.label]: true }));
+      }
+    });
   }, [pathname]);
 
   const handleLogout = async () => {
@@ -93,10 +128,22 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   );
 
   let pageTitle = currentPage?.label ?? "SIPINTAR PKRS";
-  if (pathname.includes("/tambah")) pageTitle = "Tambah Kegiatan";
-  if (pathname.includes("/edit")) pageTitle = "Edit Kegiatan";
-  if (pathname.match(/\/penyuluhan\/[^/]+$/) && !pathname.includes("/tambah"))
-    pageTitle = "Detail Penyuluhan";
+  if (pathname.startsWith("/penyuluhan")) {
+    if (pathname.includes("/tambah")) pageTitle = "Tambah Penyuluhan";
+    else if (pathname.includes("/edit")) pageTitle = "Edit Penyuluhan";
+    else if (pathname === "/penyuluhan") pageTitle = "Data Penyuluhan";
+    else pageTitle = "Detail Penyuluhan";
+  } else if (pathname.startsWith("/supervisi")) {
+    if (pathname.includes("/tambah")) pageTitle = "Tambah Supervisi";
+    else if (pathname.includes("/edit")) pageTitle = "Edit Supervisi";
+    else if (pathname === "/supervisi") pageTitle = "Supervisi Bulanan";
+    else pageTitle = "Detail Supervisi";
+  } else if (pathname.startsWith("/audit-mutu")) {
+    if (pathname.includes("/tambah")) pageTitle = "Tambah Audit Mutu";
+    else if (pathname.includes("/edit")) pageTitle = "Edit Audit Mutu";
+    else if (pathname === "/audit-mutu") pageTitle = "Audit Indikator Mutu";
+    else pageTitle = "Detail Audit Mutu";
+  }
 
   return (
     <div className="min-h-screen lg:h-screen w-full flex flex-col lg:flex-row bg-background overflow-x-hidden">
@@ -539,7 +586,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                   isActive ? "text-sky-400" : "text-slate-400"
                 )}
               />
-              <span className="truncate">{item.label}</span>
+              <span className="truncate max-w-[56px] text-center">
+                {item.shortLabel ?? item.label}
+              </span>
             </Link>
           );
         })}

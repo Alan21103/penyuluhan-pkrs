@@ -36,7 +36,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Rute yang dilindungi (butuh login)
-  const protectedRoutes = ["/dashboard", "/penyuluhan", "/laporan"];
+  const protectedRoutes = ["/dashboard", "/penyuluhan", "/laporan", "/supervisi", "/audit-mutu"];
   const isProtected = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
