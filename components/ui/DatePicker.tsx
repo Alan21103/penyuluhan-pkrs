@@ -43,7 +43,7 @@ const DAYS_HEADER_ID = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 export default function DatePicker({
   value = "",
   onChange,
-  placeholder = "Select a date",
+  placeholder = "Pilih tanggal",
   label,
   error,
   disabled = false,
@@ -59,11 +59,20 @@ export default function DatePicker({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Parse initial selected date
+  // Parse initial selected date safely (handles "YYYY-MM-DD", ISO strings, etc.)
   const selectedDate = useMemo(() => {
     if (!value) return null;
-    const parts = value.split("-").map(Number);
-    if (parts.length === 3) {
+    const cleanValue = String(value).trim().split("T")[0].split(" ")[0];
+    const parts = cleanValue.split("-").map(Number);
+    if (
+      parts.length === 3 &&
+      !parts.some(isNaN) &&
+      parts[0] > 1900 &&
+      parts[1] >= 1 &&
+      parts[1] <= 12 &&
+      parts[2] >= 1 &&
+      parts[2] <= 31
+    ) {
       return new Date(parts[0], parts[1] - 1, parts[2]);
     }
     const d = new Date(value);
@@ -266,7 +275,7 @@ export default function DatePicker({
   const hasError = Boolean(error || variant === "error");
 
   return (
-    <div className={cn("relative w-full", className)} ref={containerRef}>
+    <div className={cn("relative w-full", isOpen && "z-40", className)} ref={containerRef}>
       {label && (
         <label
           htmlFor={id}

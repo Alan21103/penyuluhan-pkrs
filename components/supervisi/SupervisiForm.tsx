@@ -21,6 +21,7 @@ import {
   PenLine,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import DatePicker from "@/components/ui/DatePicker";
 import SignaturePad from "@/components/penyuluhan/SignaturePad";
 import { supervisiService } from "@/services/supervisi.service";
 import type {
@@ -48,18 +49,23 @@ function SectionCard({
   letter,
   label,
   children,
+  className,
 }: {
   id: string;
   letter: string;
   label: string;
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
     <div
       id={`sec-${id}`}
-      className="rounded-2xl border border-border bg-card shadow-xs mb-6 overflow-hidden scroll-mt-6"
+      className={cn(
+        "relative rounded-2xl border border-border bg-card shadow-xs mb-6 scroll-mt-6 focus-within:z-30",
+        className
+      )}
     >
-      <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-border bg-muted/20">
+      <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-border bg-muted/20 rounded-t-2xl">
         <span className="w-6 h-6 rounded-md bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shrink-0">
           {letter}
         </span>
@@ -173,7 +179,7 @@ function defaultForm(): Partial<SupervisiBulanan> {
     nama_rs: "UPTD Khusus RSUD dr. M. Yunus Bengkulu",
     unit_ruang: "",
     bulan_periode: "",
-    tanggal_supervisi: new Date().toISOString().split("T")[0],
+    tanggal_supervisi: "",
     supervisor: "",
     checklist_supervisi: DEFAULT_CHECKLIST_SUPERVISI.map((c) => ({ ...c })),
     jumlah_item_dinilai: 0,
@@ -491,7 +497,7 @@ function FormSections({
   return (
     <>
       {/* Section A — Identitas Supervisi */}
-      <SectionCard id="A" letter="A" label="Identitas Supervisi">
+      <SectionCard id="A" letter="A" label="Identitas Supervisi" className="z-30">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
             <FieldLabel>Nama Rumah Sakit</FieldLabel>
@@ -522,11 +528,12 @@ function FormSections({
           </div>
           <div>
             <FieldLabel required>Tanggal Supervisi</FieldLabel>
-            <InputField
+            <DatePicker
               id="input-tgl"
-              type="date"
               value={form.tanggal_supervisi ?? ""}
-              onChange={(e) => set("tanggal_supervisi", e.target.value)}
+              onChange={(str) => set("tanggal_supervisi", str)}
+              placeholder="Pilih tanggal"
+              locale="id"
             />
           </div>
           <div>
@@ -542,7 +549,7 @@ function FormSections({
       </SectionCard>
 
       {/* Section B — Checklist Supervisi */}
-      <SectionCard id="B" letter="B" label="Checklist Supervisi">
+      <SectionCard id="B" letter="B" label="Checklist Supervisi" className="z-20">
         <div className="space-y-4">
           {checklist.map((item, idx) => (
             <div key={item.id} className="rounded-xl border border-border bg-muted/20 p-4 space-y-3">
@@ -590,7 +597,7 @@ function FormSections({
       </SectionCard>
 
       {/* Section C — Hasil Supervisi */}
-      <SectionCard id="C" letter="C" label="Hasil Supervisi">
+      <SectionCard id="C" letter="C" label="Hasil Supervisi" className="z-10">
         <div className={cn("rounded-xl border p-4", hasilBg(hasil.hasil_kategori))}>
           <div className="flex items-center justify-between mb-3">
             <span className={cn("text-2xl font-bold", hasilColor(hasil.hasil_kategori))}>

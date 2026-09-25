@@ -16,6 +16,7 @@ import {
   Percent,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import DatePicker from "@/components/ui/DatePicker";
 import { auditMutuService } from "@/services/audit-mutu.service";
 import type { AuditMutu, ChecklistAuditItem, StatusAudit } from "@/types/audit-mutu";
 import { DEFAULT_CHECKLIST_AUDIT } from "@/types/audit-mutu";
@@ -30,7 +31,7 @@ function defaultForm(): Partial<AuditMutu> {
     periode_audit: "",
     bulan: "",
     unit_ruangan: "",
-    tanggal_audit: new Date().toISOString().split("T")[0],
+    tanggal_audit: "",
     auditor: "",
     checklist_audit: DEFAULT_CHECKLIST_AUDIT.map((item) => ({ ...item })),
     status: "draft",
@@ -198,8 +199,8 @@ export default function AuditMutuForm({ mode, initialData }: AuditMutuFormProps)
       )}
 
       {/* Bagian 1: Identitas Audit */}
-      <div className="rounded-2xl border border-border bg-card shadow-xs overflow-hidden">
-        <div className="flex items-center gap-3 px-5 py-4 border-b border-border bg-muted/20">
+      <div className="relative rounded-2xl border border-border bg-card shadow-xs z-30 focus-within:z-30">
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-border bg-muted/20 rounded-t-2xl">
           <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
             <Shield className="w-4 h-4 text-primary" />
           </div>
@@ -239,11 +240,12 @@ export default function AuditMutuForm({ mode, initialData }: AuditMutuFormProps)
             <label className="block text-xs font-medium text-foreground mb-1.5">
               Tanggal Audit <span className="text-destructive">*</span>
             </label>
-            <input
-              type="date"
+            <DatePicker
+              id="input-tanggal-audit"
               value={form.tanggal_audit ?? ""}
-              onChange={(e) => updateField("tanggal_audit", e.target.value)}
-              className="w-full rounded-xl border border-input bg-background px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              onChange={(str) => updateField("tanggal_audit", str)}
+              placeholder="Pilih tanggal"
+              locale="id"
             />
           </div>
 
@@ -276,7 +278,7 @@ export default function AuditMutuForm({ mode, initialData }: AuditMutuFormProps)
       </div>
 
       {/* Bagian 2: 8 Indikator Mutu PKRS */}
-      <div className="rounded-2xl border border-border bg-card shadow-xs overflow-hidden">
+      <div className="relative rounded-2xl border border-border bg-card shadow-xs z-10">
         <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-muted/20">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
