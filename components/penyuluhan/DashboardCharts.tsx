@@ -11,6 +11,8 @@ import {
 } from "recharts";
 import { BarChart3 } from "lucide-react";
 
+import ChartCard from "@/components/charts/ChartCard";
+
 interface ChartData {
   bulan: string;
   jumlah_penyuluhan: number;
@@ -74,21 +76,12 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
       {/* Card 1: Jumlah Penyuluhan per Bulan */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-[0_4px_24px_rgba(0,0,0,0.03)] flex flex-col justify-between">
-        {/* Header with Title Tab & Horizontal Divider */}
-        <div className="relative mb-6">
-          <div className="flex items-center justify-between pb-3">
-            <div className="relative pb-1">
-              <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                Jumlah Penyuluhan
-              </span>
-              <span className="absolute bottom-[-13px] left-0 right-0 h-[3px] bg-blue-500 rounded-full z-10" />
-            </div>
-          </div>
-          <div className="w-full h-[1px] bg-slate-200/80 dark:bg-slate-800" />
-        </div>
-
-        {/* Chart 1 Area */}
+      <ChartCard
+        title="Jumlah Penyuluhan"
+        accentColor="bg-blue-500"
+        legendText={`${currentYear} — Kegiatan Penyuluhan`}
+        legendColor="bg-[#6888ff]"
+      >
         <div className="w-full h-[260px] sm:h-[290px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -133,30 +126,15 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
             </BarChart>
           </ResponsiveContainer>
         </div>
-
-        {/* Bottom Legend */}
-        <div className="flex items-center justify-center gap-2 mt-4 pt-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
-          <span className="w-2.5 h-2.5 rounded-xs bg-[#6888ff]" />
-          <span>{currentYear} — Kegiatan Penyuluhan</span>
-        </div>
-      </div>
+      </ChartCard>
 
       {/* Card 2: Rata-rata Pemahaman Peserta (%) */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-[0_4px_24px_rgba(0,0,0,0.03)] flex flex-col justify-between">
-        {/* Header with Title Tab & Horizontal Divider */}
-        <div className="relative mb-6">
-          <div className="flex items-center justify-between pb-3">
-            <div className="relative pb-1">
-              <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                Rata-rata Pemahaman Peserta
-              </span>
-              <span className="absolute bottom-[-13px] left-0 right-0 h-[3px] bg-sky-500 rounded-full z-10" />
-            </div>
-          </div>
-          <div className="w-full h-[1px] bg-slate-200/80 dark:bg-slate-800" />
-        </div>
-
-        {/* Chart 2 Area */}
+      <ChartCard
+        title="Rata-rata Pemahaman Peserta"
+        accentColor="bg-sky-500"
+        legendText={`${currentYear} — Rata-rata Pemahaman (%)`}
+        legendColor="bg-sky-500"
+      >
         <div className="w-full h-[260px] sm:h-[290px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -202,13 +180,7 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
             </BarChart>
           </ResponsiveContainer>
         </div>
-
-        {/* Bottom Legend */}
-        <div className="flex items-center justify-center gap-2 mt-4 pt-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
-          <span className="w-2.5 h-2.5 rounded-xs bg-sky-500" />
-          <span>{currentYear} — Rata-rata Pemahaman (%)</span>
-        </div>
-      </div>
+      </ChartCard>
     </div>
   );
 }

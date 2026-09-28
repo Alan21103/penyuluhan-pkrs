@@ -22,6 +22,10 @@ import { auditMutuService } from "@/services/audit-mutu.service";
 import { generateAuditMutuExcel } from "@/services/export/audit-mutu-excel";
 import { downloadAuditMutuPDF } from "@/services/export/audit-mutu-pdf";
 import type { AuditMutu } from "@/types/audit-mutu";
+import TablePagination from "@/components/shared/TablePagination";
+import AuditMutuDeleteDialog from "@/components/audit-mutu/AuditMutuDeleteDialog";
+
+const PAGE_SIZE = 10;
 
 const fmtDate = (d?: string | null) => {
   if (!d) return "-";
@@ -47,7 +51,8 @@ export default function AuditMutuTable() {
   const [data, setData] = useState<AuditMutu[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [deleteTarget, setDeleteTarget] = useState<AuditMutu | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -60,6 +65,10 @@ export default function AuditMutuTable() {
     load();
   }, [load]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
   const filtered = data.filter((d) => {
     const q = search.toLowerCase();
     return (
@@ -71,13 +80,8 @@ export default function AuditMutuTable() {
     );
   });
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Hapus data audit indikator mutu ini?")) return;
-    setDeletingId(id);
-    await auditMutuService.delete(id);
-    await load();
-    setDeletingId(null);
-  };
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleExportExcel = () => {
     generateAuditMutuExcel(filtered, `Rekap_Audit_Mutu_${new Date().getFullYear()}.xlsx`);
@@ -158,7 +162,7 @@ export default function AuditMutuTable() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {filtered.map((row) => {
+                {paginated.map((row) => {
                   const avg = getAvgCapaian(row);
                   const met = avg >= 80;
                   return (
@@ -231,14 +235,9 @@ export default function AuditMutuTable() {
                           <button
                             className="p-1.5 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer"
                             title="Hapus"
-                            onClick={() => handleDelete(row.id)}
-                            disabled={deletingId === row.id}
+                            onClick={() => setDeleteTarget(row)}
                           >
-                            {deletingId === row.id ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <Trash2 className="w-4 h-4" />
-                            )}
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </td>
@@ -251,7 +250,7 @@ export default function AuditMutuTable() {
 
           {/* Mobile Cards */}
           <div className="md:hidden divide-y divide-border">
-            {filtered.map((row) => {
+            {paginated.map((row) => {
               const avg = getAvgCapaian(row);
               const met = avg >= 80;
               return (
@@ -315,8 +314,7 @@ export default function AuditMutuTable() {
                     </button>
                     <button
                       className="px-3 py-1.5 rounded-lg border border-red-200 text-xs text-red-600 hover:bg-red-50 transition-all cursor-pointer"
-                      onClick={() => handleDelete(row.id)}
-                      disabled={deletingId === row.id}
+                      onClick={() => setDeleteTarget(row)}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -325,12 +323,25 @@ export default function AuditMutuTable() {
               );
             })}
           </div>
+
+          {/* Pagination */}
+          <TablePagination
+            page={page}
+            totalPages={totalPages}
+            totalItems={filtered.length}
+            pageSize={PAGE_SIZE}
+            onPageChange={setPage}
+            itemName="data audit mutu"
+          />
         </div>
       )}
 
-      <p className="text-xs text-muted-foreground text-right">
-        Menampilkan {filtered.length} dari {data.length} data
-      </p>
+      {/* Delete Confirmation Dialog */}
+      <AuditMutuDeleteDialog
+        data={deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onSuccess={load}
+      />
     </div>
   );
 }

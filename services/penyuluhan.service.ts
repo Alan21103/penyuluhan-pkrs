@@ -78,9 +78,9 @@ export const penyuluhanService = {
         .eq("penyuluhan_id", id);
 
       if (docs && docs.length > 0) {
-        const pathsToDelete = docs
+        const pathsToDelete = (docs as Array<{ file_url: string | null; is_external_link?: boolean | null }>)
           .filter((d) => !d.is_external_link && d.file_url && !d.file_url.startsWith("http"))
-          .map((d) => d.file_url);
+          .map((d) => d.file_url as string);
 
         if (pathsToDelete.length > 0) {
           await supabase.storage.from("penyuluhan-files").remove(pathsToDelete);

@@ -7,12 +7,9 @@ import { cn } from "@/lib/utils";
 import { FileSpreadsheet, Filter, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DatePicker from "@/components/ui/DatePicker";
+import { BULAN_LIST } from "@/constants/date";
+import TablePagination from "@/components/shared/TablePagination";
 import type { Penyuluhan } from "@/types/penyuluhan";
-
-const MONTHS = [
-  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-  "Juli", "Agustus", "September", "Oktober", "November", "Desember",
-];
 
 const STATUS_CONFIG = {
   draft: { label: "Draft", className: "bg-amber-50 text-amber-700 border-amber-200" },
@@ -57,7 +54,7 @@ export default function LaporanView({ data }: LaporanViewProps) {
   const handleExcel = () => {
     const label =
       filterMode === "bulan"
-        ? `${MONTHS[bulan]}_${tahun}`
+        ? `${BULAN_LIST[bulan]}_${tahun}`
         : `${fromDate || "awal"}_sd_${toDate || "akhir"}`;
     generateExcel(filtered, `Rekap_PKRS_${label}.xlsx`);
   };
@@ -125,7 +122,7 @@ export default function LaporanView({ data }: LaporanViewProps) {
                 onChange={e => { setBulan(Number(e.target.value)); setPage(1); }}
                 className="w-full h-10 px-3 rounded-xl border border-input bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               >
-                {MONTHS.map((m, i) => <option key={i} value={i}>{m}</option>)}
+                {BULAN_LIST.map((m, i) => <option key={i} value={i}>{m}</option>)}
               </select>
             </div>
             <div className="w-full sm:w-36">
@@ -233,25 +230,6 @@ export default function LaporanView({ data }: LaporanViewProps) {
             );
           })
         )}
-
-        {/* Mobile Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between px-1 py-2">
-            <p className="text-xs text-muted-foreground">
-              {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} dari {filtered.length}
-            </p>
-            <div className="flex gap-1">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                className="p-1.5 rounded-lg border border-border disabled:opacity-40 hover:bg-muted transition-colors">
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                className="p-1.5 rounded-lg border border-border disabled:opacity-40 hover:bg-muted transition-colors">
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* ── Desktop Table View (md+) ── */}
@@ -315,26 +293,17 @@ export default function LaporanView({ data }: LaporanViewProps) {
             </tbody>
           </table>
         </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-muted/20">
-            <p className="text-xs text-muted-foreground">
-              {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} dari {filtered.length} data
-            </p>
-            <div className="flex gap-1">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                className="p-1.5 rounded-lg border border-border disabled:opacity-40 hover:bg-muted transition-colors">
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                className="p-1.5 rounded-lg border border-border disabled:opacity-40 hover:bg-muted transition-colors">
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Pagination */}
+      <TablePagination
+        page={page}
+        totalPages={totalPages}
+        totalItems={filtered.length}
+        pageSize={PAGE_SIZE}
+        onPageChange={setPage}
+        itemName="kegiatan penyuluhan"
+      />
     </div>
   );
 }

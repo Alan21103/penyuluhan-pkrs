@@ -4,11 +4,8 @@ import { NextResponse, type NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
-  const supabaseUrl =
-    process.env.NEXT_PUBLIC_SUPABASE_URL || "https://njefepwxmwfhcntvhvie.supabase.co";
-  const supabaseAnonKey =
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qZWZlcHd4bXdmaGNudHZodmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1OTE0NTEsImV4cCI6MjEwMzE2NzQ1MX0.smoR1dSUwc43t-UzrWnXdqz-Jpwv0sgBEgq_UFH15W8";
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
   const supabase = createServerClient(
     supabaseUrl,
@@ -36,7 +33,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Rute yang dilindungi (butuh login)
-  const protectedRoutes = ["/dashboard", "/penyuluhan", "/laporan", "/supervisi", "/audit-mutu"];
+  const protectedRoutes = ["/dashboard", "/penyuluhan", "/laporan", "/supervisi", "/audit-mutu", "/media-edukasi"];
   const isProtected = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
