@@ -20,6 +20,7 @@ import type { LaporanMediaEdukasi, MediaEdukasiItem, StatusMediaEdukasi } from "
 import { JENIS_MEDIA_OPTIONS, BENTUK_MEDIA_OPTIONS, LOKASI_PLATFORM_OPTIONS, SASARAN_OPTIONS } from "@/types/media-edukasi";
 import { mediaEdukasiService } from "@/services/media-edukasi.service";
 import SelectWithLainnya from "@/components/shared/SelectWithLainnya";
+import DatePicker from "@/components/ui/DatePicker";
 
 // ─── Daftar Bagian (Sections) Sesuai Urutan ──────────────────────────────────
 const SECTIONS = [
@@ -473,10 +474,11 @@ function FormSections({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <FieldLabel required>Tanggal / Nomor Media</FieldLabel>
-                  <InputField
+                  <DatePicker
                     value={item.tanggal_nomor}
-                    onChange={(e) => setItem(item.id, "tanggal_nomor", e.target.value)}
-                    placeholder="Tanggal atau nomor seri media"
+                    onChange={(dateStr) => setItem(item.id, "tanggal_nomor", dateStr)}
+                    placeholder="Pilih tanggal media..."
+                    locale="id"
                   />
                 </div>
                 <div>

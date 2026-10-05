@@ -5,9 +5,10 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
   Plus, Search, Eye, Pencil, Trash2, FileSpreadsheet,
-  Loader2, AlertCircle, CheckCircle2, Clock
+  Loader2, AlertCircle, CheckCircle2, Clock, FilterX, RotateCcw, Calendar
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import DatePicker from "@/components/ui/DatePicker";
 import { mediaEdukasiService } from "@/services/media-edukasi.service";
 import { generateMediaEdukasiExcel } from "@/services/export/media-edukasi-excel";
 import type { LaporanMediaEdukasi } from "@/types/media-edukasi";
@@ -26,6 +27,8 @@ export default function MediaEdukasiTable() {
   const [data, setData] = useState<LaporanMediaEdukasi[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [page, setPage] = useState(1);
   const [deleteTarget, setDeleteTarget] = useState<LaporanMediaEdukasi | null>(null);
 
@@ -42,17 +45,40 @@ export default function MediaEdukasiTable() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
-  useEffect(() => { setPage(1); }, [search]);
+  useEffect(() => { setPage(1); }, [search, startDate, endDate]);
+
+  const handleResetFilter = () => {
+    setSearch("");
+    setStartDate("");
+    setEndDate("");
+  };
 
   const filtered = data.filter((d) => {
     const q = search.toLowerCase();
-    return (
+    const matchesSearch =
       !q ||
       d.periode_bulan?.toLowerCase().includes(q) ||
       d.tahun?.toString().toLowerCase().includes(q) ||
       d.penanggung_jawab?.toLowerCase().includes(q) ||
-      d.petugas_pelaporan?.toLowerCase().includes(q)
-    );
+      d.petugas_pelaporan?.toLowerCase().includes(q) ||
+      (d.items && d.items.some(i => i.judul_materi?.toLowerCase().includes(q) || i.tanggal_nomor?.toLowerCase().includes(q)));
+
+    let matchesDate = true;
+    if (startDate || endDate) {
+      const itemDates = (d.items || []).map(i => i.tanggal_nomor).filter(Boolean);
+      const docDateStr = d.created_at ? d.created_at.split('T')[0] : '';
+      const dateList = [...itemDates, docDateStr];
+
+      if (startDate && endDate) {
+        matchesDate = dateList.some(date => date >= startDate && date <= endDate);
+      } else if (startDate) {
+        matchesDate = dateList.some(date => date >= startDate);
+      } else if (endDate) {
+        matchesDate = dateList.some(date => date <= endDate);
+      }
+    }
+
+    return matchesSearch && matchesDate;
   });
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -62,29 +88,72 @@ export default function MediaEdukasiTable() {
     generateMediaEdukasiExcel(filtered, `Rekap_Media_Edukasi_${new Date().getFullYear()}.xlsx`);
   };
 
+  const isFilterActive = search !== "" || startDate !== "" || endDate !== "";
+
   return (
     <div className="space-y-4">
-      {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-        <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
-            id="search-media-edukasi"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari periode, penanggung jawab..."
-            className="w-full pl-9 pr-4 py-2 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
-          />
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleExportExcel} className="rounded-xl gap-1.5 cursor-pointer" id="btn-export-excel">
-            <FileSpreadsheet className="w-4 h-4" /> Excel
-          </Button>
-          <Link href="/media-edukasi/tambah">
-            <Button size="sm" className="rounded-xl gap-1.5 bg-primary cursor-pointer" id="btn-tambah-media">
-              <Plus className="w-4 h-4" /> Tambah Data
+      {/* Toolbar & Filter Bar */}
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col lg:flex-row gap-3 items-start lg:items-center justify-between">
+          <div className="flex flex-wrap items-center gap-2 flex-1 w-full lg:w-auto">
+            {/* Search Input */}
+            <div className="relative min-w-[220px] flex-1 sm:flex-initial">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                id="search-media-edukasi"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Cari periode, penanggung jawab..."
+                className="w-full pl-9 pr-4 py-2 rounded-xl border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+              />
+            </div>
+
+            {/* Date Pickers for Rentang Tanggal */}
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="w-40">
+                <DatePicker
+                  value={startDate}
+                  onChange={(val) => setStartDate(val)}
+                  placeholder="Dari Tanggal"
+                  locale="id"
+                />
+              </div>
+              <span className="text-xs text-muted-foreground hidden sm:inline">-</span>
+              <div className="w-40">
+                <DatePicker
+                  value={endDate}
+                  onChange={(val) => setEndDate(val)}
+                  placeholder="Sampai Tanggal"
+                  locale="id"
+                />
+              </div>
+            </div>
+
+            {/* Reset Filter Button */}
+            {isFilterActive && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleResetFilter}
+                className="rounded-xl text-xs gap-1 text-muted-foreground hover:text-foreground cursor-pointer h-9 px-2.5"
+                title="Reset Filter"
+              >
+                <RotateCcw className="w-3.5 h-3.5" /> Reset
+              </Button>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-2 w-full lg:w-auto justify-end">
+            <Button variant="outline" size="sm" onClick={handleExportExcel} className="rounded-xl gap-1.5 cursor-pointer" id="btn-export-excel">
+              <FileSpreadsheet className="w-4 h-4" /> Excel
             </Button>
-          </Link>
+            <Link href="/media-edukasi/tambah">
+              <Button size="sm" className="rounded-xl gap-1.5 bg-primary cursor-pointer" id="btn-tambah-media">
+                <Plus className="w-4 h-4" /> Tambah Data
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 
