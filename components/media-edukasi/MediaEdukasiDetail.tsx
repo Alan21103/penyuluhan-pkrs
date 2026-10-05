@@ -136,8 +136,21 @@ export default function MediaEdukasiDetail({ data }: MediaEdukasiDetailProps) {
                         <span className="font-medium text-foreground text-xs">{item.bentuk_media || "-"}</span>
                       </div>
                       <div>
-                        <span className="text-muted-foreground block text-[11px]">Lokasi/Platform</span>
-                        <span className="font-medium text-foreground text-xs">{item.lokasi_platform || "-"}</span>
+                        <span className="text-muted-foreground block text-[11px] mb-1">Lokasi/Platform</span>
+                        {item.lokasi_platform ? (
+                          <div className="flex flex-wrap gap-1">
+                            {item.lokasi_platform.split(",").map((p, idx) => (
+                              <span
+                                key={idx}
+                                className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-muted text-foreground border border-border"
+                              >
+                                {p.trim()}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="font-medium text-foreground text-xs">-</span>
+                        )}
                       </div>
                       <div>
                         <span className="text-muted-foreground block text-[11px]">Sasaran</span>

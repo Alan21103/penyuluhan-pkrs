@@ -20,6 +20,8 @@ import type { LaporanMediaEdukasi, MediaEdukasiItem, StatusMediaEdukasi } from "
 import { JENIS_MEDIA_OPTIONS, BENTUK_MEDIA_OPTIONS, LOKASI_PLATFORM_OPTIONS, SASARAN_OPTIONS } from "@/types/media-edukasi";
 import { mediaEdukasiService } from "@/services/media-edukasi.service";
 import SelectWithLainnya from "@/components/shared/SelectWithLainnya";
+import MultiSelectCheckboxes from "@/components/shared/MultiSelectCheckboxes";
+import NumericStepperInput from "@/components/shared/NumericStepperInput";
 import DatePicker from "@/components/ui/DatePicker";
 
 // ─── Daftar Bagian (Sections) Sesuai Urutan ──────────────────────────────────
@@ -507,22 +509,23 @@ function FormSections({
                     placeholder="Judul atau topik materi"
                   />
                 </div>
-                <div>
-                  <FieldLabel required>Lokasi / Platform</FieldLabel>
-                  <SelectWithLainnya
+                <div className="sm:col-span-2">
+                  <FieldLabel required>Lokasi / Platform (Dapat Pilih Lebih dari Satu)</FieldLabel>
+                  <MultiSelectCheckboxes
                     value={item.lokasi_platform}
                     onValueChange={(val) => setItem(item.id, "lokasi_platform", val)}
                     options={LOKASI_PLATFORM_OPTIONS}
-                    placeholder="Pilih lokasi/platform"
+                    customPlaceholder="Ketik lokasi/platform lainnya..."
                   />
                 </div>
-                <div>
+                <div className="sm:col-span-2">
                   <FieldLabel required>Jumlah Distribusi / Tayangan</FieldLabel>
-                  <InputField
-                    type="number"
+                  <NumericStepperInput
                     value={item.jumlah_distribusi}
-                    onChange={(e) => setItem(item.id, "jumlah_distribusi", parseInt(e.target.value) || 0)}
-                    placeholder="0"
+                    onChange={(val) => setItem(item.id, "jumlah_distribusi", val)}
+                    min={0}
+                    unitLabel="Eks / Tayangan"
+                    quickPresets={[10, 50, 100]}
                   />
                 </div>
                 <div className="sm:col-span-2">

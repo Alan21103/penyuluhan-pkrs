@@ -42,6 +42,7 @@ export const LOKASI_PLATFORM_OPTIONS = [
   'Poliklinik Rawat Jalan',
   'TV RS',
   'Instagram',
+  'TikTok',
   'YouTube',
   'QR Code/Website',
   'Lainnya',
